@@ -102,6 +102,35 @@ Or check the PDS settings page for your handle (e.g. `bsky.app/settings/account`
 
 **Why this works:** The NSID `org.designtxt.tokenCollection` has authority `org.designtxt`. Reversed, it becomes `designtxt.org`. atproto SDKs query `_lexicon.designtxt.org` for the DID that owns this namespace, then fetch the lexicon from that DID's `com.atproto.lexicon.schema` collection.
 
+### With Marque (atproto-native registrar)
+
+If `designtxt.org` is registered through [Marque](https://marque.at), DNS records live on your PDS as atproto records in the **`at.marque.dns`** collection (record key = FQDN, matching the corresponding `at.marque.domain` record). You create the `_lexicon` TXT record by writing a DNS record to your own PDS -- no control panel needed.
+
+Marque's dashboard has a DNS editor, but you can also manage records from the CLI using any atproto client. With `goat`:
+
+```bash
+# Login (one time)
+goat account login
+
+# Get your DID
+goat account status
+
+# Create the _lexicon TXT record
+# (uses your PDS's com.atproto.repo.createRecord)
+goat xrpc post com.atproto.repo.createRecord \
+  --repo "$(goat account status --did)" \
+  --collection at.marque.dns \
+  --rkey designtxt.org \
+  --record '{
+    "name": "_lexicon.designtxt.org",
+    "type": "TXT",
+    "ttl": 300,
+    "value": "did=did:plc:YOUR_DID"
+  }'
+```
+
+This makes the DNS step scriptable alongside everything else -- the full pipeline (validate, DNS, publish) can run from CI.
+
 ### Propagation
 
 DNS changes can take minutes to hours to propagate. You can verify with:
