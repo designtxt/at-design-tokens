@@ -9,6 +9,8 @@ Design tokens are how your team ships design decisions to code. Colors, spacing,
 
 Built on the [DTCG Design Tokens](https://www.designtokens.org/TR/2025.10/) format, the open industry standard for describing design decisions in code.
 
+**Try it live:** [Token Viewer →](https://designtxt.org/atproto) — browse token collections by `at://` URI, no install needed.
+
 **Start here:** [Design Team Usage Guide →](./USAGE.md) — scenarios for single brands, multi-brand design systems, theming, breakpoints, and CI.
 
 > [!NOTE]
