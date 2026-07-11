@@ -1,4 +1,4 @@
-# org.designtxt
+# Design Tokens on the AT Protocol
 
 Design tokens are how your team ships design decisions to code. Colors, spacing, type scales, shadows — they power every screen your users see. But keeping them in sync across products and platforms is a mess of branch confusion, stale copies, and "which file has the latest colors?"
 
@@ -12,13 +12,13 @@ Built on the [DTCG Design Tokens](https://www.designtokens.org/TR/2025.10/) form
 
 ## Lexicon Index
 
-| NSID | Kind | Purpose |
-|------|------|---------|
-| `org.designtxt.defs` | definitions | Reusable value-type schemas for all DTCG token types |
-| `org.designtxt.tokenCollection` | record | A DTCG-format design tokens file stored as an atproto record |
-| `org.designtxt.resolver` | record | A resolver document for multi-context token resolution (theming, breakpoints, etc.) |
-| `org.designtxt.getTokens` | query | Retrieve a `tokenCollection` (optionally at a sub-path, with alias resolution) |
-| `org.designtxt.resolveTokens` | procedure | Resolve a resolver document against contextual inputs |
+| NSID                            | Kind        | Purpose                                                                             |
+|---------------------------------|-------------|-------------------------------------------------------------------------------------|
+| `org.designtxt.defs`            | definitions | Reusable value-type schemas for all DTCG token types                                |
+| `org.designtxt.tokenCollection` | record.     | A DTCG-format design tokens file stored as an atproto record                        |
+| `org.designtxt.resolver`        | record      | A resolver document for multi-context token resolution (theming, breakpoints, etc.) |
+| `org.designtxt.getTokens`       | query       | Retrieve a `tokenCollection` (optionally at a sub-path, with alias resolution)      |
+| `org.designtxt.resolveTokens`   | procedure   | Resolve a resolver document against contextual inputs                               |
 
 Full reference: [`LEXICON_REFERENCE.md`](./LEXICON_REFERENCE.md) | Usage guide: [`USAGE.md`](./USAGE.md)
 
@@ -71,7 +71,7 @@ The AT Protocol data model supports integer, boolean, string, bytes, and link (C
 The `integrations/` directory contains sample scripts that publish design tokens from common DTCG tools to an atproto PDS:
 
 | Integration | Type | Description |
-|---|---|---|
+|-------------|------|-------------|
 | [`integrations/style-dictionary/`](./integrations/style-dictionary/) | publish-only | Reads Style Dictionary output JSON and publishes as a `tokenCollection` record |
 | [`integrations/tokens-studio/`](./integrations/tokens-studio/) | publish-only | Reads Tokens Studio exports (DTCG-native, legacy, or multi-file themes) and publishes as a `tokenCollection` record |
 | [`integrations/terrazzo/`](./integrations/terrazzo/) | two-way sync | Daemon that watches local Terrazzo token files, publishes changes to atproto, and polls the PDS for remote updates |
