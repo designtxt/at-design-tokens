@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import 'dotenv/config'
-import { readFileSync, existsSync } from 'node:fs'
+import { readFileSync, readdirSync, existsSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { AtpAgent } from '@atproto/api'
@@ -136,13 +136,40 @@ function buildRecord(systemId, systemName, tokens) {
 /* ------------------------------------------------------------------ */
 
 async function publishRecord(agent, systemId, record) {
-  const response = await agent.com.atproto.repo.createRecord({
+  const response = await agent.com.atproto.repo.putRecord({
     repo: agent.session?.did ?? '',
     collection: 'org.designtxt.tokenCollection',
     rkey: systemId,
     record,
   })
   return response.uri
+}
+
+/* ------------------------------------------------------------------ */
+/*  Discover standalone sample JSON files from samples/                 */
+/* ------------------------------------------------------------------ */
+
+function discoverSamples() {
+  const samplesDir = resolve(ROOT, 'samples')
+  if (!existsSync(samplesDir)) return []
+
+  const files = readdirSync(samplesDir).filter(f => f.endsWith('.json'))
+  const samples = []
+
+  for (const file of files) {
+    const rkey = file.replace(/\.json$/, '')
+    const record = readJSON(resolve(samplesDir, file))
+
+    // Skip files that don't look like token collections
+    if (!record.name || typeof record.name !== 'string') {
+      console.warn(` ⚠️  Skipping ${file}: missing "name" field`)
+      continue
+    }
+
+    samples.push({ id: rkey, name: record.name, record })
+  }
+
+  return samples
 }
 
 /* ------------------------------------------------------------------ */
@@ -163,6 +190,19 @@ async function main() {
     records[id] = record
   }
 
+  // Merge in standalone samples from samples/
+  const samples = discoverSamples()
+  for (const { id, record } of samples) {
+    if (records[id]) {
+      console.warn(` ⚠️  Sample "${id}" overrides dtcg-examples record with same id`)
+    }
+    records[id] = record
+  }
+
+  const count = Object.keys(records).length
+  console.log(` Found ${count} records (${SYSTEMS.length} dtcg-examples + ${samples.length} samples)`)
+  console.log(` Rkeys: ${Object.keys(records).join(', ')}`)
+
   if (isDryRun) {
     process.stdout.write(JSON.stringify(records, null, 2) + '\n')
     return
@@ -170,6 +210,7 @@ async function main() {
 
   const { ATP_USERNAME, ATP_PASSWORD, ATP_PDS_HOST } = process.env
   if (!ATP_USERNAME || !ATP_PASSWORD || !ATP_PDS_HOST) {
+    console.error('')
     console.error('Missing required env vars for publish mode.')
     console.error('  ATP_USERNAME, ATP_PASSWORD, ATP_PDS_HOST')
     console.error('')
@@ -180,8 +221,8 @@ async function main() {
   const agent = new AtpAgent({ service: ATP_PDS_HOST })
   await agent.login({ identifier: ATP_USERNAME, password: ATP_PASSWORD })
 
-  for (const { id, name } of SYSTEMS) {
-    const uri = await publishRecord(agent, id, records[id])
+  for (const [id, record] of Object.entries(records)) {
+    const uri = await publishRecord(agent, id, record)
     console.log(` 🟢 ${id} -> ${uri}`)
   }
 }

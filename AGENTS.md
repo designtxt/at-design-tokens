@@ -19,11 +19,19 @@ Do **not** use `ATP_IDENTIFIER`, `ATP_SERVICE`, or any other naming — the actu
 
 ## Record Keys for Samples
 
-`scripts/publish-samples.mjs` publishes 3 records:
+`scripts/publish-samples.mjs` publishes records from two sources:
 
+**dtcg-examples** (npm package):
 - `figma-sds`
 - `github-primer`
 - `ibm-carbon`
+
+**samples/ directory** (standalone JSON files):
+- Any `.json` file in `samples/` is published with the filename (minus `.json`) as the rkey
+- Files must have a `name` field to be picked up
+- Currently: `all-token-types`
+
+Run `npm run publish-samples:dry-run` to preview all records. To add a new sample, drop a JSON file in `samples/` with the token collection structure.
 
 Collection: `org.designtxt.tokenCollection`. View/delete at `pdsls.dev/at://<did>/org.designtxt.tokenCollection/`.
 
