@@ -1,0 +1,59 @@
+{
+  "lexicon": 1,
+  "id": "org.designtxt.resolver",
+  "description": "A resolver document for multi-context design tokens (theming, breakpoints, accessibility modes). Follows the DTCG Resolver 2025.10 specification. Describes how token sets and contextual modifiers combine to produce resolved token values for a given input.",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "A resolver document that declares token sets and contextual modifiers, with a resolution order that determines how they compose. Given an input (e.g. {theme: 'dark', size: 'compact'}), a resolver produces a flat, contextually-appropriate token set.",
+      "key": "any",
+      "record": {
+        "type": "object",
+        "description": "Root of a resolver document.",
+        "required": ["version", "resolutionOrder"],
+        "properties": {
+          "$schema": {
+            "type": "string",
+            "description": "Optional URL of a JSON Schema for this resolver document."
+          },
+          "name": {
+            "type": "string",
+            "description": "Short human-readable name for this resolver document."
+          },
+          "version": {
+            "type": "string",
+            "description": "Resolver format version. Must be '2025.10' per DTCG Resolver spec.",
+            "const": "2025.10"
+          },
+          "description": {
+            "type": "string",
+            "description": "Human-readable description of this resolver's purpose."
+          },
+          "$extensions": {
+            "type": "object",
+            "description": "Vendor-specific extension data. Keys should use reverse-domain notation."
+          },
+          "$defs": {
+            "type": "object",
+            "description": "JSON Schema $defs for bundling inline token references. Tools may ignore this key."
+          },
+          "sets": {
+            "type": "object",
+            "description": "Named sets of design token sources. Keys are set names; values are set definitions with a 'sources' array and optional 'description' and '$extensions'.",
+            "properties": {}
+          },
+          "modifiers": {
+            "type": "object",
+            "description": "Named modifiers for contextual token overrides. Keys are modifier names; values have a 'contexts' map (string to token sources array), optional 'description', optional 'default', and optional '$extensions'.",
+            "properties": {}
+          },
+          "resolutionOrder": {
+            "type": "array",
+            "description": "Ordered list of sets and modifiers that determines the resolution cascade. Later items override earlier ones on conflict. Each entry is a reference object ({$ref: string}) or an inline definition ({name, type: 'set'|'modifier', ...}).",
+            "items": { "type": "unknown" }
+          }
+        }
+      }
+    }
+  }
+}

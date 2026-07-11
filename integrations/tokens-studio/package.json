@@ -1,0 +1,8 @@
+{
+  "name": "@org.designtxt/tokens-studio-publish",
+  "type": "module",
+  "dependencies": {
+    "@atproto/api": "^0.14.0",
+    "dotenv": "^16.0.0"
+  }
+}

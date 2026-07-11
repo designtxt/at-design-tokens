@@ -1,0 +1,241 @@
+{
+  "lexicon": 1,
+  "id": "org.designtxt.defs",
+  "description": "Shared type definitions for Design Tokens, based on DTCG 2025.10 stable specification. Defines scalar value types (color, dimension, duration, etc.) and composite value types (border, shadow, typography, etc.) used by token and resolver records.",
+  "defs": {
+    "colorValue": {
+      "type": "object",
+      "description": "A color value expressed in a specific color space with optional alpha and hex fallback. Float components are stored as strings because the atproto data model does not support floating-point numbers.",
+      "required": ["colorSpace", "components"],
+      "properties": {
+        "colorSpace": {
+          "type": "string",
+          "description": "The color space identifier.",
+          "knownValues": [
+            "srgb", "srgb-linear", "hsl", "hwb", "lab", "lch",
+            "oklab", "oklch", "display-p3", "a98-rgb",
+            "prophoto-rgb", "rec2020", "xyz-d65", "xyz-d50"
+          ]
+        },
+        "components": {
+          "type": "array",
+          "description": "Color component values (positional, depending on colorSpace). Each element is a string-encoded float (e.g. '0.4', '1.0') or the string 'none'.",
+          "items": { "type": "string" }
+        },
+        "alpha": {
+          "type": "string",
+          "description": "Opacity as a string-encoded float between '0' and '1'. Assumed '1' if omitted."
+        },
+        "hex": {
+          "type": "string",
+          "description": "6-digit CSS hex fallback (e.g. #ff00ff).",
+          "maxGraphemes": 7,
+          "maxLength": 7
+        }
+      }
+    },
+    "dimensionValue": {
+      "type": "object",
+      "description": "A dimension with a numeric value and CSS-compatible unit. The value is a string-encoded float because atproto does not support floating-point numbers.",
+      "required": ["value", "unit"],
+      "properties": {
+        "value": {
+          "type": "string",
+          "description": "The numeric magnitude as a string-encoded float (e.g. '16.5', '100', '0.25')."
+        },
+        "unit": {
+          "type": "string",
+          "description": "The unit of measurement.",
+          "knownValues": [
+            "px", "rem", "em", "pt", "pc", "in", "cm", "mm",
+            "%", "vw", "vh", "vmin", "vmax", "ch", "ex"
+          ]
+        }
+      }
+    },
+    "durationValue": {
+      "type": "object",
+      "description": "A duration with a numeric value and time unit. The value is a string-encoded float because atproto does not support floating-point numbers.",
+      "required": ["value", "unit"],
+      "properties": {
+        "value": {
+          "type": "string",
+          "description": "The numeric magnitude as a string-encoded float (e.g. '150', '300.5')."
+        },
+        "unit": {
+          "type": "string",
+          "description": "The time unit.",
+          "knownValues": ["ms", "s"]
+        }
+      }
+    },
+    "cubicBezierValue": {
+      "type": "array",
+      "description": "A cubic Bezier curve defined by exactly 4 control-point string-encoded floats (x1, y1, x2, y2).",
+      "items": { "type": "string" },
+      "minLength": 4,
+      "maxLength": 4
+    },
+    "numberValue": {
+      "type": "string",
+      "description": "A numeric value encoded as a string (e.g. '42', '3.14159'). Encoded as string because atproto does not support floating-point numbers and cannot distinguish integer from float at the type level."
+    },
+    "fontFamilyValue": {
+      "type": "string",
+      "description": "A font family name or comma-separated fallback string."
+    },
+    "fontWeightValue": {
+      "type": "union",
+      "description": "A font weight expressed as a named keyword or numeric value (1-1000 integer).",
+      "refs": [
+        "org.designtxt.defs#fontWeightKeyword",
+        "org.designtxt.defs#fontWeightNumber"
+      ]
+    },
+    "fontWeightKeyword": {
+      "type": "string",
+      "knownValues": [
+        "thin", "hairline", "extraLight", "ultraLight", "light",
+        "normal", "regular", "book", "medium",
+        "semiBold", "demiBold", "bold",
+        "extraBold", "ultraBold", "black", "heavy",
+        "extraBlack", "ultraBlack"
+      ]
+    },
+    "fontWeightNumber": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000
+    },
+    "strokeStyleValue": {
+      "type": "object",
+      "description": "Stroke style properties (dash array, line cap/join, miter limit). Corresponds to DTCG 'strokeStyle' composite type. Dash lengths and miter limit are string-encoded floats.",
+      "properties": {
+        "dashArray": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Dash and gap lengths as string-encoded floats."
+        },
+        "lineCap": {
+          "type": "string",
+          "knownValues": ["round", "butt", "square"],
+          "description": "Shape at the end of open subpaths."
+        },
+        "lineJoin": {
+          "type": "string",
+          "knownValues": ["miter", "bevel", "round"],
+          "description": "Shape at the corners of paths."
+        },
+        "miterLimit": {
+          "type": "string",
+          "description": "Maximum miter length when lineJoin is 'miter', as a string-encoded float."
+        }
+      }
+    },
+    "borderValue": {
+      "type": "object",
+      "description": "A composite border value combining width, line style, and color.",
+      "properties": {
+        "width": { "$ref": "#dimensionValue", "description": "Border width." },
+        "style": {
+          "type": "string",
+          "knownValues": [
+            "solid", "dashed", "dotted", "double",
+            "groove", "ridge", "inset", "outset", "none"
+          ],
+          "description": "Border line style."
+        },
+        "color": { "$ref": "#colorValue", "description": "Border color." }
+      }
+    },
+    "transitionValue": {
+      "type": "object",
+      "description": "A composite transition value with duration, delay, and timing function.",
+      "properties": {
+        "duration": { "$ref": "#durationValue", "description": "Transition duration." },
+        "delay": { "$ref": "#durationValue", "description": "Transition delay." },
+        "timingFunction": {
+          "$ref": "#cubicBezierValue",
+          "description": "Timing function as a cubic Bezier curve."
+        }
+      }
+    },
+    "shadowValue": {
+      "type": "object",
+      "description": "A composite shadow value (drop shadow / box-shadow) with color, offsets, blur, spread.",
+      "properties": {
+        "color": { "$ref": "#colorValue", "description": "Shadow color." },
+        "offsetX": { "$ref": "#dimensionValue", "description": "Horizontal offset." },
+        "offsetY": { "$ref": "#dimensionValue", "description": "Vertical offset." },
+        "blur": { "$ref": "#dimensionValue", "description": "Blur radius." },
+        "spread": { "$ref": "#dimensionValue", "description": "Spread radius." },
+        "inset": {
+          "type": "boolean",
+          "description": "Whether the shadow is inset (inner shadow)."
+        }
+      }
+    },
+    "gradientValue": {
+      "type": "object",
+      "description": "A composite gradient value with type and color stops.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "knownValues": ["linear", "radial", "conic"],
+          "description": "Gradient type."
+        },
+        "angles": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Angle values in degrees as string-encoded floats."
+        },
+        "colorStops": {
+          "type": "array",
+          "items": { "$ref": "#colorStop" },
+          "description": "Color stops defining the gradient."
+        }
+      }
+    },
+    "colorStop": {
+      "type": "object",
+      "description": "A single gradient color stop. Position is a string-encoded float.",
+      "properties": {
+        "color": { "$ref": "#colorValue", "description": "Color at this stop." },
+        "position": {
+          "type": "string",
+          "description": "Stop position as a string-encoded float (0-1 for proportional, or unitless percentage like '50')."
+        }
+      }
+    },
+    "typographyValue": {
+      "type": "object",
+      "description": "A composite typography value aggregating font family, weight, size, line metrics, and text transforms. Numeric values are string-encoded floats to accommodate the atproto data model.",
+      "properties": {
+        "fontFamily": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Ordered list of font family names (primary and fallbacks)."
+        },
+        "fontWeight": { "$ref": "#fontWeightValue", "description": "Font weight." },
+        "fontSize": { "$ref": "#dimensionValue", "description": "Font size." },
+        "lineHeight": {
+          "type": "string",
+          "description": "Line height as a string-encoded unitless multiplier (e.g. '1.5', '1.2')."
+        },
+        "letterSpacing": { "$ref": "#dimensionValue", "description": "Letter spacing." },
+        "paragraphSpacing": { "$ref": "#dimensionValue", "description": "Paragraph spacing." },
+        "paragraphIndent": { "$ref": "#dimensionValue", "description": "Paragraph indent." },
+        "textCase": {
+          "type": "string",
+          "knownValues": ["uppercase", "lowercase", "capitalize", "none"],
+          "description": "Text case transformation."
+        },
+        "textDecoration": {
+          "type": "string",
+          "knownValues": ["underline", "overline", "line-through", "none"],
+          "description": "Text decoration."
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "lexicon": 1,
+  "id": "org.designtxt.getTokens",
+  "description": "XRPC Query to retrieve a design token collection, optionally at a specific subtree path, and optionally with alias references resolved.",
+  "defs": {
+    "main": {
+      "type": "query",
+      "description": "Retrieve design tokens from a tokenCollection record. If no input modifiers are provided, returns the raw token document. If an input object is given (matching a resolver document's modifiers), tokens are resolved against that context.",
+      "parameters": {
+        "type": "params",
+        "required": ["ref"],
+        "properties": {
+          "ref": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "AT-URI of the org.designtxt.tokenCollection record to retrieve."
+          },
+          "path": {
+            "type": "string",
+            "description": "JSON Pointer path to a specific subtree within the token collection. When set, only the sub-tree at this path is returned."
+          },
+          "resolveReferences": {
+            "type": "boolean",
+            "description": "If true, resolve alias references ({token.name}) inline in the response. Defaults to false."
+          }
+        }
+      },
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "type": "object",
+          "required": ["tokens"],
+          "properties": {
+            "tokens": {
+              "type": "unknown",
+              "description": "The requested token data. Either the full token collection, the subtree at the requested path, or the resolved token values."
+            },
+            "resolvedAt": {
+              "type": "string",
+              "format": "datetime",
+              "description": "Timestamp when the response was produced."
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "@org.designtxt/terrazzo-sync",
+  "type": "module",
+  "dependencies": {
+    "@atproto/api": "^0.14.0",
+    "chokidar": "^4.0.0",
+    "dotenv": "^16.0.0"
+  }
+}

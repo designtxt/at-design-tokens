@@ -1,0 +1,35 @@
+{
+  "lexicon": 1,
+  "id": "org.designtxt.tokenCollection",
+  "description": "A record containing a collection of design tokens in DTCG 2025.10 format. The record has typed metadata fields (name, description, createdAt) alongside the token tree. Token/group keys sit at the same level as metadata; atproto ignores unexpected fields, so the token tree passes through without schema-level validation.",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "A design tokens document following DTCG 2025.10 format. Metadata fields (name, description, createdAt) are provided for human identification. The token tree coexists at the same object level -- each remaining key is a token (has $value) or group (no $value, may contain nested tokens/groups).",
+      "key": "any",
+      "record": {
+        "type": "object",
+        "description": "Root object of a token collection. Metadata fields are explicitly defined. Any additional keys are treated as tokens or groups per the DTCG 2025.10 Format specification.",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxGraphemes": 256,
+            "maxLength": 512,
+            "description": "Human-readable name for this token collection (e.g. 'Brand Tokens', 'My Design System Q3')."
+          },
+          "description": {
+            "type": "string",
+            "maxGraphemes": 1024,
+            "maxLength": 4096,
+            "description": "Optional description of this token collection's purpose or scope."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime",
+            "description": "Timestamp when this collection was created."
+          }
+        }
+      }
+    }
+  }
+}

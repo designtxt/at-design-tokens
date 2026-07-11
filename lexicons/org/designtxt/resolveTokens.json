@@ -1,0 +1,75 @@
+{
+  "lexicon": 1,
+  "id": "org.designtxt.resolveTokens",
+  "description": "XRPC Procedure to resolve a design token resolver document against a set of contextual inputs, producing a fully resolved token collection.",
+  "defs": {
+    "main": {
+      "type": "procedure",
+      "description": "Resolve a resolver document by providing concrete context values for each of its modifiers. Returns a flat token set with all aliases resolved. Authentication is optional; the resolver document must be publicly accessible if used without auth.",
+      "input": {
+        "encoding": "application/json",
+        "schema": {
+          "type": "object",
+          "required": ["resolverRef", "input"],
+          "properties": {
+            "resolverRef": {
+              "type": "string",
+              "format": "at-uri",
+              "description": "AT-URI of the org.designtxt.resolver record to resolve."
+            },
+            "input": {
+              "type": "object",
+              "description": "Contextual input values, keyed by modifier name. Each value must be a string matching one of that modifier's defined contexts. E.g. { \"theme\": \"dark\", \"size\": \"compact\" }.",
+              "properties": {}
+            },
+            "resolveReferences": {
+              "type": "boolean",
+              "description": "If true (default), resolve all alias references ({token.name}) in the output. Set to false to preserve aliases as literal strings."
+            }
+          }
+        }
+      },
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "type": "object",
+          "required": ["tokens"],
+          "properties": {
+            "tokens": {
+              "type": "unknown",
+              "description": "The resolved token collection. All modifier conditions have been applied according to resolutionOrder, and alias references have been resolved."
+            },
+            "input": {
+              "type": "object",
+              "description": "Echo of the input values used for resolution.",
+              "properties": {}
+            },
+            "resolvedAt": {
+              "type": "string",
+              "format": "datetime",
+              "description": "Timestamp when resolution was performed."
+            }
+          }
+        }
+      },
+      "errors": [
+        {
+          "name": "ResolverNotFound",
+          "description": "The specified resolver document could not be found."
+        },
+        {
+          "name": "InvalidInput",
+          "description": "The input values do not match the resolver's modifier definitions (unknown modifier, invalid context value, or missing required modifier without a default)."
+        },
+        {
+          "name": "CircularReference",
+          "description": "The resolver or referenced token sources contain a circular reference."
+        },
+        {
+          "name": "ResolutionFailed",
+          "description": "Token resolution failed due to unresolvable alias references, invalid token values, or other processing errors."
+        }
+      ]
+    }
+  }
+}
