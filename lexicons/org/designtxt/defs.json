@@ -10,6 +10,7 @@
       "properties": {
         "colorSpace": {
           "type": "string",
+          "maxLength": 16,
           "description": "The color space identifier.",
           "knownValues": [
             "srgb", "srgb-linear", "hsl", "hwb", "lab", "lch",
@@ -20,10 +21,11 @@
         "components": {
           "type": "array",
           "description": "Color component values (positional, depending on colorSpace). Each element is a string-encoded float (e.g. '0.4', '1.0') or the string 'none'.",
-          "items": { "type": "string" }
+          "items": { "type": "string", "maxLength": 64 }
         },
         "alpha": {
           "type": "string",
+          "maxLength": 64,
           "description": "Opacity as a string-encoded float between '0' and '1'. Assumed '1' if omitted."
         },
         "hex": {
@@ -41,10 +43,12 @@
       "properties": {
         "value": {
           "type": "string",
+          "maxLength": 64,
           "description": "The numeric magnitude as a string-encoded float (e.g. '16.5', '100', '0.25')."
         },
         "unit": {
           "type": "string",
+          "maxLength": 8,
           "description": "The unit of measurement.",
           "knownValues": [
             "px", "rem", "em", "pt", "pc", "in", "cm", "mm",
@@ -60,10 +64,12 @@
       "properties": {
         "value": {
           "type": "string",
+          "maxLength": 64,
           "description": "The numeric magnitude as a string-encoded float (e.g. '150', '300.5')."
         },
         "unit": {
           "type": "string",
+          "maxLength": 4,
           "description": "The time unit.",
           "knownValues": ["ms", "s"]
         }
@@ -72,28 +78,23 @@
     "cubicBezierValue": {
       "type": "array",
       "description": "A cubic Bezier curve defined by exactly 4 control-point string-encoded floats (x1, y1, x2, y2).",
-      "items": { "type": "string" },
-      "minLength": 4,
-      "maxLength": 4
+      "items": { "type": "string", "maxLength": 64 },
+      "minItems": 4,
+      "maxItems": 4
     },
     "numberValue": {
       "type": "string",
+      "maxLength": 128,
       "description": "A numeric value encoded as a string (e.g. '42', '3.14159'). Encoded as string because atproto does not support floating-point numbers and cannot distinguish integer from float at the type level."
     },
     "fontFamilyValue": {
       "type": "string",
+      "maxLength": 512,
       "description": "A font family name or comma-separated fallback string."
-    },
-    "fontWeightValue": {
-      "type": "union",
-      "description": "A font weight expressed as a named keyword or numeric value (1-1000 integer).",
-      "refs": [
-        "org.designtxt.defs#fontWeightKeyword",
-        "org.designtxt.defs#fontWeightNumber"
-      ]
     },
     "fontWeightKeyword": {
       "type": "string",
+      "maxLength": 16,
       "knownValues": [
         "thin", "hairline", "extraLight", "ultraLight", "light",
         "normal", "regular", "book", "medium",
@@ -113,21 +114,24 @@
       "properties": {
         "dashArray": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": { "type": "string", "maxLength": 64 },
           "description": "Dash and gap lengths as string-encoded floats."
         },
         "lineCap": {
           "type": "string",
+          "maxLength": 8,
           "knownValues": ["round", "butt", "square"],
           "description": "Shape at the end of open subpaths."
         },
         "lineJoin": {
           "type": "string",
+          "maxLength": 8,
           "knownValues": ["miter", "bevel", "round"],
           "description": "Shape at the corners of paths."
         },
         "miterLimit": {
           "type": "string",
+          "maxLength": 64,
           "description": "Maximum miter length when lineJoin is 'miter', as a string-encoded float."
         }
       }
@@ -136,26 +140,27 @@
       "type": "object",
       "description": "A composite border value combining width, line style, and color.",
       "properties": {
-        "width": { "$ref": "#dimensionValue", "description": "Border width." },
+        "width": { "type": "ref", "ref": "#dimensionValue", "description": "Border width." },
         "style": {
           "type": "string",
+          "maxLength": 8,
           "knownValues": [
             "solid", "dashed", "dotted", "double",
             "groove", "ridge", "inset", "outset", "none"
           ],
           "description": "Border line style."
         },
-        "color": { "$ref": "#colorValue", "description": "Border color." }
+        "color": { "type": "ref", "ref": "#colorValue", "description": "Border color." }
       }
     },
     "transitionValue": {
       "type": "object",
       "description": "A composite transition value with duration, delay, and timing function.",
       "properties": {
-        "duration": { "$ref": "#durationValue", "description": "Transition duration." },
-        "delay": { "$ref": "#durationValue", "description": "Transition delay." },
+        "duration": { "type": "ref", "ref": "#durationValue", "description": "Transition duration." },
+        "delay": { "type": "ref", "ref": "#durationValue", "description": "Transition delay." },
         "timingFunction": {
-          "$ref": "#cubicBezierValue",
+          "type": "ref", "ref": "#cubicBezierValue",
           "description": "Timing function as a cubic Bezier curve."
         }
       }
@@ -164,11 +169,11 @@
       "type": "object",
       "description": "A composite shadow value (drop shadow / box-shadow) with color, offsets, blur, spread.",
       "properties": {
-        "color": { "$ref": "#colorValue", "description": "Shadow color." },
-        "offsetX": { "$ref": "#dimensionValue", "description": "Horizontal offset." },
-        "offsetY": { "$ref": "#dimensionValue", "description": "Vertical offset." },
-        "blur": { "$ref": "#dimensionValue", "description": "Blur radius." },
-        "spread": { "$ref": "#dimensionValue", "description": "Spread radius." },
+        "color": { "type": "ref", "ref": "#colorValue", "description": "Shadow color." },
+        "offsetX": { "type": "ref", "ref": "#dimensionValue", "description": "Horizontal offset." },
+        "offsetY": { "type": "ref", "ref": "#dimensionValue", "description": "Vertical offset." },
+        "blur": { "type": "ref", "ref": "#dimensionValue", "description": "Blur radius." },
+        "spread": { "type": "ref", "ref": "#dimensionValue", "description": "Spread radius." },
         "inset": {
           "type": "boolean",
           "description": "Whether the shadow is inset (inner shadow)."
@@ -181,17 +186,18 @@
       "properties": {
         "type": {
           "type": "string",
+          "maxLength": 8,
           "knownValues": ["linear", "radial", "conic"],
           "description": "Gradient type."
         },
         "angles": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": { "type": "string", "maxLength": 64 },
           "description": "Angle values in degrees as string-encoded floats."
         },
         "colorStops": {
           "type": "array",
-          "items": { "$ref": "#colorStop" },
+          "items": { "type": "ref", "ref": "#colorStop" },
           "description": "Color stops defining the gradient."
         }
       }
@@ -200,9 +206,10 @@
       "type": "object",
       "description": "A single gradient color stop. Position is a string-encoded float.",
       "properties": {
-        "color": { "$ref": "#colorValue", "description": "Color at this stop." },
+        "color": { "type": "ref", "ref": "#colorValue", "description": "Color at this stop." },
         "position": {
           "type": "string",
+          "maxLength": 64,
           "description": "Stop position as a string-encoded float (0-1 for proportional, or unitless percentage like '50')."
         }
       }
@@ -213,25 +220,32 @@
       "properties": {
         "fontFamily": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": { "type": "string", "maxLength": 256 },
           "description": "Ordered list of font family names (primary and fallbacks)."
         },
-        "fontWeight": { "$ref": "#fontWeightValue", "description": "Font weight." },
-        "fontSize": { "$ref": "#dimensionValue", "description": "Font size." },
+        "fontWeight": {
+          "type": "union",
+          "refs": ["#fontWeightKeyword", "#fontWeightNumber"],
+          "description": "Font weight."
+        },
+        "fontSize": { "type": "ref", "ref": "#dimensionValue", "description": "Font size." },
         "lineHeight": {
           "type": "string",
+          "maxLength": 64,
           "description": "Line height as a string-encoded unitless multiplier (e.g. '1.5', '1.2')."
         },
-        "letterSpacing": { "$ref": "#dimensionValue", "description": "Letter spacing." },
-        "paragraphSpacing": { "$ref": "#dimensionValue", "description": "Paragraph spacing." },
-        "paragraphIndent": { "$ref": "#dimensionValue", "description": "Paragraph indent." },
+        "letterSpacing": { "type": "ref", "ref": "#dimensionValue", "description": "Letter spacing." },
+        "paragraphSpacing": { "type": "ref", "ref": "#dimensionValue", "description": "Paragraph spacing." },
+        "paragraphIndent": { "type": "ref", "ref": "#dimensionValue", "description": "Paragraph indent." },
         "textCase": {
           "type": "string",
+          "maxLength": 12,
           "knownValues": ["uppercase", "lowercase", "capitalize", "none"],
           "description": "Text case transformation."
         },
         "textDecoration": {
           "type": "string",
+          "maxLength": 12,
           "knownValues": ["underline", "overline", "line-through", "none"],
           "description": "Text decoration."
         }

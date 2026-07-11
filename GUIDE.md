@@ -24,8 +24,9 @@ go install github.com/bluesky-social/goat@latest
 ```
 
 Verify:
+
 ```bash
-goat version
+goat --version # goat version v0.2.3-rev-d064a46
 ```
 
 ---
@@ -42,7 +43,7 @@ This parses all JSON files under `lexicons/` and reports style issues, missing d
 
 Expected output:
 
-```
+```text
  🟢 lexicons/org/designtxt/defs.json
  🟢 lexicons/org/designtxt/tokenCollection.json
  🟢 lexicons/org/designtxt/resolver.json
@@ -50,7 +51,11 @@ Expected output:
  🟢 lexicons/org/designtxt/resolveTokens.json
 ```
 
-Yellow or red indicators mean the linter found issues -- read the message next to each file and fix the corresponding JSON.
+Yellow or red indicators mean the linter found issues -- read the message next to each file and fix the corresponding JSON. Alternatively, copy this prompt and feed it to your AI agent:
+
+```text
+Run `goat lex lint` and fix any linting errors. See https://atproto.com/guides/lexicon for help with definitions.
+```
 
 You can also use the convenience script:
 
@@ -76,7 +81,7 @@ AT Protocol resolves lexicon NSIDs via DNS TXT records. For the `org.designtxt.*
 
 **The record:**
 
-```
+```dns
 _lexicon.designtxt.org   TXT   "did=did:plc:YOUR_DID_HERE"
 ```
 
@@ -93,12 +98,12 @@ Or check the PDS settings page for your handle (e.g. `bsky.app/settings/account`
 
 ### DNS details
 
-| Field | Value |
-|-------|-------|
-| Record type | `TXT` |
-| Name | `_lexicon.designtxt.org` |
-| Value | `did=did:plc:abc123...` (your DID) |
-| TTL | 300 (or your default) |
+| Field       | Value                              |
+| ----------- | ---------------------------------- |
+| Record type | `TXT`                              |
+| Name        | `_lexicon.designtxt.org`           |
+| Value       | `did=did:plc:abc123...` (your DID) |
+| TTL         | 300 (or your default)              |
 
 **Why this works:** The NSID `org.designtxt.tokenCollection` has authority `org.designtxt`. Reversed, it becomes `designtxt.org`. atproto SDKs query `_lexicon.designtxt.org` for the DID that owns this namespace, then fetch the lexicon from that DID's `com.atproto.lexicon.schema` collection.
 
@@ -147,7 +152,7 @@ goat lex check-dns
 
 Expected output:
 
-```
+```text
  🟢 org.designtxt.* -> did:plc:abc123...
 ```
 
@@ -173,7 +178,7 @@ This uploads each JSON file in `lexicons/` as a `com.atproto.lexicon.schema` rec
 
 Expected output:
 
-```
+```text
  🟢 org.designtxt.defs
  🟢 org.designtxt.tokenCollection
  🟢 org.designtxt.resolver
@@ -221,19 +226,11 @@ This compares local lexicons against the live network and shows any differences.
 
 ### Check via PDSLS
 
-Browse to:
-
-```
-https://pdsls.dev/at://<YOUR_DID>/com.atproto.lexicon.schema/
-```
+Browse to [https://pdsls.dev/at://<YOUR_DID>/com.atproto.lexicon.schema/](https://pdsls.dev/at://<YOUR_DID>/com.atproto.lexicon.schema/)
 
 You should see all five `org.designtxt.*` records listed.
 
-Or check a specific lexicon:
-
-```
-https://pdsls.dev/at://<YOUR_DID>/com.atproto.lexicon.schema/org.designtxt.tokenCollection.json
-```
+Or check a specific lexicon: [https://pdsls.dev/at://<YOUR_DID>/com.atproto.lexicon.schema/org.designtxt.tokenCollection.json](https://pdsls.dev/at://<YOUR_DID>/com.atproto.lexicon.schema/org.designtxt.tokenCollection.json)
 
 ### Check via goat fetch
 

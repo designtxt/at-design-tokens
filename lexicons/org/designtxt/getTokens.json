@@ -13,10 +13,12 @@
           "ref": {
             "type": "string",
             "format": "at-uri",
+            "maxLength": 8192,
             "description": "AT-URI of the org.designtxt.tokenCollection record to retrieve."
           },
           "path": {
             "type": "string",
+            "maxLength": 1024,
             "description": "JSON Pointer path to a specific subtree within the token collection. When set, only the sub-tree at this path is returned."
           },
           "resolveReferences": {
@@ -38,6 +40,7 @@
             "resolvedAt": {
               "type": "string",
               "format": "datetime",
+              "maxLength": 64,
               "description": "Timestamp when the response was produced."
             }
           }

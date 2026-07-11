@@ -15,6 +15,7 @@
             "resolverRef": {
               "type": "string",
               "format": "at-uri",
+              "maxLength": 8192,
               "description": "AT-URI of the org.designtxt.resolver record to resolve."
             },
             "input": {
@@ -47,6 +48,7 @@
             "resolvedAt": {
               "type": "string",
               "format": "datetime",
+              "maxLength": 64,
               "description": "Timestamp when resolution was performed."
             }
           }

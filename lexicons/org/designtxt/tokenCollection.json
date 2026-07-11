@@ -26,6 +26,7 @@
           "createdAt": {
             "type": "string",
             "format": "datetime",
+            "maxLength": 64,
             "description": "Timestamp when this collection was created."
           }
         }

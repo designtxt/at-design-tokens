@@ -12,39 +12,43 @@
         "description": "Root of a resolver document.",
         "required": ["version", "resolutionOrder"],
         "properties": {
-          "$schema": {
+          "schema": {
             "type": "string",
-            "description": "Optional URL of a JSON Schema for this resolver document."
+            "maxLength": 2048,
+            "description": "Optional URL of a JSON Schema for this resolver document. Maps to the DTCG $schema field."
           },
           "name": {
             "type": "string",
+            "maxLength": 256,
             "description": "Short human-readable name for this resolver document."
           },
           "version": {
             "type": "string",
+            "maxLength": 16,
             "description": "Resolver format version. Must be '2025.10' per DTCG Resolver spec.",
             "const": "2025.10"
           },
           "description": {
             "type": "string",
+            "maxLength": 4096,
             "description": "Human-readable description of this resolver's purpose."
           },
-          "$extensions": {
+          "extensions": {
             "type": "object",
-            "description": "Vendor-specific extension data. Keys should use reverse-domain notation."
+            "description": "Vendor-specific extension data. Maps to the DTCG $extensions field. Keys should use reverse-domain notation."
           },
-          "$defs": {
+          "defs": {
             "type": "object",
-            "description": "JSON Schema $defs for bundling inline token references. Tools may ignore this key."
+            "description": "JSON Schema $defs for bundling inline token references. Maps to the DTCG $defs field. Tools may ignore this key."
           },
           "sets": {
             "type": "object",
-            "description": "Named sets of design token sources. Keys are set names; values are set definitions with a 'sources' array and optional 'description' and '$extensions'.",
+            "description": "Named sets of design token sources. Keys are set names; values are set definitions with a 'sources' array and optional 'description' and 'extensions'.",
             "properties": {}
           },
           "modifiers": {
             "type": "object",
-            "description": "Named modifiers for contextual token overrides. Keys are modifier names; values have a 'contexts' map (string to token sources array), optional 'description', optional 'default', and optional '$extensions'.",
+            "description": "Named modifiers for contextual token overrides. Keys are modifier names; values have a 'contexts' map (string to token sources array), optional 'description', optional 'default', and optional 'extensions'.",
             "properties": {}
           },
           "resolutionOrder": {
