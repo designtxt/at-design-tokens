@@ -1,4 +1,4 @@
-# Design Tokens on the AT Protocol
+# Design Tokens in the Atmosphere
 
 > [!CAUTION]
 > This project is an experimental proof of concept, and most of the docs and code are AI-generated. Proceed at your own risk.
