@@ -9,7 +9,7 @@ fi
 echo "=== Publishing lexicons ==="
 echo "Using: goat lex publish $UPDATE_FLAG"
 echo ""
-echo "Credentials from GOAT_USERNAME / GOAT_PASSWORD env vars,"
+echo "Credentials from ATP_USERNAME / ATP_PASSWORD env vars,"
 echo "or from an active 'goat account login' session."
 echo ""
 

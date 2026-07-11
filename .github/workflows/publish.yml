@@ -31,6 +31,6 @@ jobs:
 
       - name: Publish lexicons
         env:
-          GOAT_USERNAME: ${{ secrets.GOAT_USERNAME }}
-          GOAT_PASSWORD: ${{ secrets.GOAT_PASSWORD }}
+          ATP_USERNAME: ${{ secrets.ATP_USERNAME }}
+          ATP_PASSWORD: ${{ secrets.ATP_PASSWORD }}
         run: goat lex publish --update

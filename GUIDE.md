@@ -207,8 +207,8 @@ Or using the convenience script:
 If you are publishing from CI, you can skip interactive login:
 
 ```bash
-export GOAT_USERNAME="your-handle.bsky.social"
-export GOAT_PASSWORD="your-app-password"
+export ATP_USERNAME="your-handle.bsky.social"
+export ATP_PASSWORD="your-app-password"
 goat lex publish
 ```
 
@@ -255,14 +255,14 @@ SDKs and tooling (like `pdsls`, `lexicon-garden`, etc.) will automatically resol
 
 ## Full Checklist
 
-- [ ] `goat` installed
-- [ ] `goat account login` succeeds
-- [ ] `goat lex lint` shows all green
-- [ ] DNS TXT record `_lexicon.designtxt.org` -> `did=...` added
-- [ ] `goat lex check-dns` shows green for `org.designtxt.*`
-- [ ] `goat lex publish` completes without errors
-- [ ] `goat lex status` shows no unexpected differences
-- [ ] PDSLS shows all five lexicon records
+- [x] `goat` installed
+- [x] `goat account login` succeeds
+- [x] `goat lex lint` shows all green
+- [x] DNS TXT record `_lexicon.designtxt.org` -> `did=...` added
+- [x] `goat lex check-dns` shows green for `org.designtxt.*`
+- [x] `goat lex publish` completes without errors
+- [x] `goat lex status` shows no unexpected differences
+- [x] PDSLS shows all five lexicon records
 
 ---
 
