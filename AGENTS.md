@@ -1,4 +1,4 @@
-# AGENTS.md — atprotokens
+# AGENTS.md — at-design-tokens
 
 ## Environment Variable Convention
 
