@@ -32,6 +32,34 @@ Full reference: [`LEXICON_REFERENCE.md`](./LEXICON_REFERENCE.md) | Usage guide: 
 
 ---
 
+## XRPC Worker
+
+The `getTokens` and `resolveTokens` endpoints are implemented as a Cloudflare Worker at `xrpc.designtxt.org`.
+
+**Endpoints:**
+- `GET /xrpc/org.designtxt.getTokens` — Retrieve tokens with optional path extraction and reference resolution
+- `POST /xrpc/org.designtxt.resolveTokens` — Resolve a resolver document against contextual inputs
+
+**Local development:**
+```bash
+cd worker
+npm install
+npx wrangler dev
+```
+
+**Deploy:**
+```bash
+cd worker
+npx wrangler deploy
+```
+
+**DNS setup (after moving to Cloudflare):**
+```
+xrpc.designtxt.org  CNAME  designtxt-tokens.<your-subdomain>.workers.dev
+```
+
+---
+
 ## Design Rationale
 
 ### Coarse records, not per-token granularity

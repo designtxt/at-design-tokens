@@ -1,7 +1,7 @@
 {
   "lexicon": 1,
   "id": "org.designtxt.getTokens",
-  "description": "XRPC Query to retrieve a design token collection, optionally at a specific subtree path, and optionally with alias references resolved.",
+  "description": "XRPC Query to retrieve a design token collection, optionally at a specific subtree path, and optionally with alias references resolved. Implemented at https://xrpc.designtxt.org/xrpc/org.designtxt.getTokens",
   "defs": {
     "main": {
       "type": "query",
