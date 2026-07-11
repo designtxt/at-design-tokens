@@ -1,8 +1,12 @@
-# AT Protocol Lexicons for Design Tokens (`org.designtxt`)
+# org.designtxt
 
-Your design tokens should have a single source of truth that's easy to find and doesn't break when someone renames a branch. This project gives them a permanent, network-addressable home on the AT Protocol — so your web app, iOS app, design tools, and CI all fetch from the same canonical values, resolved for the right brand, theme, and breakpoint.
+Design tokens are how your team ships design decisions to code. Colors, spacing, type scales, shadows — they power every screen your users see. But keeping them in sync across products and platforms is a mess of branch confusion, stale copies, and "which file has the latest colors?"
 
-AT Protocol schema definitions for the [DTCG Design Tokens 2025.10](https://www.designtokens.org/TR/2025.10/) stable specification. Maps design tokens (color, dimension, typography, shadow, etc.) into atproto records and XRPC endpoints under the `org.designtxt` namespace.
+**org.designtxt** is a standard way to publish your design tokens on the AT Protocol network (the same open protocol behind Bluesky). Publish your token file once to a permanent address. Your web app, iOS app, design tools, and CI all fetch from the same source, resolved for the right brand, theme, and breakpoint. No vendor lock-in, no "check the README for the right branch."
+
+Built on the [DTCG Design Tokens](https://www.designtokens.org/TR/2025.10/) format, the open industry standard for describing design decisions in code.
+
+**Start here:** [Design Team Usage Guide →](./USAGE.md) — scenarios for single brands, multi-brand design systems, theming, breakpoints, and CI.
 
 ---
 
