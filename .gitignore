@@ -9,3 +9,5 @@ node_modules/
 .sync-state.json
 
 dist/
+
+samples/

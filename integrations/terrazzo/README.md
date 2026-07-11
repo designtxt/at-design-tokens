@@ -29,8 +29,8 @@ cp .env.example .env    # edit with your PDS and credentials
 node sync.mjs
 
 # Or override with environment variables
-ATP_SERVICE="https://pds.example.com" \
-ATP_IDENTIFIER="handle.bsky.social" \
+ATP_PDS_HOST="https://pds.example.com" \
+ATP_USERNAME="handle.bsky.social" \
 ATP_PASSWORD="app-password" \
 TERRAZZO_TOKEN_DIR="./tokens" \
 node sync.mjs
@@ -42,8 +42,8 @@ Run alongside `terrazzo dev` in a separate terminal or as a background process.
 
 | Variable | Required | Default | Description |
 |---|---|---|---|
-| `ATP_SERVICE` | yes | — | PDS URL (e.g. `https://pds.example.com`) |
-| `ATP_IDENTIFIER` | yes | — | Handle or email for atproto login |
+| `ATP_PDS_HOST` | yes | — | PDS URL (e.g. `https://pds.example.com`) |
+| `ATP_USERNAME` | yes | — | Handle or email for atproto login |
 | `ATP_PASSWORD` | yes | — | App password |
 | `ATP_RECORD_KEY` | no | `terrazzo` | Record key for the tokenCollection |
 | `TERRAZZO_TOKEN_DIR` | no | `tokens/` | Path to DTCG token file(s) |
@@ -56,7 +56,7 @@ Run alongside `terrazzo dev` in a separate terminal or as a background process.
 npx terrazzo dev
 
 # Terminal 2: AT Protocol sync daemon
-ATP_IDENTIFIER=... ATP_PASSWORD=... node sync.mjs
+ATP_USERNAME=... ATP_PASSWORD=... node sync.mjs
 
 # Edit your tokens — every save triggers a publish to atproto
 ```

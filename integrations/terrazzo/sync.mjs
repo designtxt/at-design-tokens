@@ -9,9 +9,9 @@ import { watch } from 'chokidar'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 const {
-  ATP_SERVICE,
-  ATP_IDENTIFIER,
+  ATP_USERNAME,
   ATP_PASSWORD,
+  ATP_PDS_HOST,
   ATP_RECORD_KEY,
   TERRAZZO_TOKEN_DIR,
   SYNC_INTERVAL,
@@ -20,12 +20,10 @@ const {
 const TOKEN_DIR = resolve(TERRAZZO_TOKEN_DIR || 'tokens')
 const RECORD_KEY = ATP_RECORD_KEY || 'terrazzo'
 
-if (!ATP_SERVICE || !ATP_IDENTIFIER || !ATP_PASSWORD) {
-  console.error('Missing required env vars: ATP_SERVICE, ATP_IDENTIFIER, ATP_PASSWORD')
+if (!ATP_USERNAME || !ATP_PASSWORD || !ATP_PDS_HOST) {
+  console.error('Missing required env vars: ATP_USERNAME, ATP_PASSWORD, ATP_PDS_HOST')
   process.exit(1)
 }
-
-const SERVICE = ATP_SERVICE
 const POLL_MS = parseInt(SYNC_INTERVAL || '30000', 10)
 const STATE_FILE = resolve(__dirname, '.sync-state.json')
 
@@ -232,9 +230,9 @@ function startWatcher() {
 /* ------------------------------------------------------------------ */
 
 async function main() {
-  agent = new AtpAgent({ service: SERVICE })
-  await agent.login({ identifier: ATP_IDENTIFIER, password: ATP_PASSWORD })
-  console.log(`[auth] logged in as ${ATP_IDENTIFIER}`)
+  agent = new AtpAgent({ service: ATP_PDS_HOST })
+  await agent.login({ identifier: ATP_USERNAME, password: ATP_PASSWORD })
+  console.log(`[auth] logged in as ${ATP_USERNAME}`)
 
   // initial push
   await pushLocal()

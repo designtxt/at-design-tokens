@@ -1,0 +1,17 @@
+{
+  "name": "@org.designtxt/lexicons",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "goat lex lint",
+    "publish-samples": "node scripts/publish-samples.mjs",
+    "publish-samples:dry-run": "node scripts/publish-samples.mjs --dry-run"
+  },
+  "devDependencies": {
+    "dtcg-examples": "^1.0.3"
+  },
+  "dependencies": {
+    "@atproto/api": "^0.14.0",
+    "dotenv": "^16.0.0"
+  }
+}

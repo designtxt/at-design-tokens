@@ -9,9 +9,9 @@ import { AtpAgent } from '@atproto/api'
 /* ------------------------------------------------------------------ */
 
 const {
-  ATP_SERVICE,
-  ATP_IDENTIFIER,
+  ATP_USERNAME,
   ATP_PASSWORD,
+  ATP_PDS_HOST,
   ATP_RECORD_KEY,
   TS_TOKEN_FILE,
   TS_TOKEN_DIR,
@@ -19,8 +19,8 @@ const {
 
 const RECORD_KEY = ATP_RECORD_KEY || 'latest'
 
-if (!ATP_SERVICE || !ATP_IDENTIFIER || !ATP_PASSWORD) {
-  console.error('Missing required env vars: ATP_SERVICE, ATP_IDENTIFIER, ATP_PASSWORD')
+if (!ATP_USERNAME || !ATP_PASSWORD || !ATP_PDS_HOST) {
+  console.error('Missing required env vars: ATP_USERNAME, ATP_PASSWORD, ATP_PDS_HOST')
   process.exit(1)
 }
 
@@ -189,8 +189,8 @@ async function main() {
     ...stringifyNumbers(normalized),
   }
 
-  const agent = new AtpAgent({ service: SERVICE })
-  await agent.login({ identifier: ATP_IDENTIFIER, password: ATP_PASSWORD })
+  const agent = new AtpAgent({ service: ATP_PDS_HOST })
+  await agent.login({ identifier: ATP_USERNAME, password: ATP_PASSWORD })
 
   const existing = await agent.com.atproto.repo.getRecord({
     repo: agent.session.did,

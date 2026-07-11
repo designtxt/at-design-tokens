@@ -537,9 +537,9 @@ jobs:
           node scripts/publish.mjs << EOF
             const { Agent } = require('@atproto/api')
             const tokens = require('./tokens/production.json')
-            const agent = new Agent({ service: '${{ secrets.ATP_SERVICE }}' })
+            const agent = new Agent({ service: '${{ secrets.ATP_PDS_HOST }}' })
             await agent.login({
-              identifier: '${{ secrets.ATP_IDENTIFIER }}',
+              identifier: '${{ secrets.ATP_USERNAME }}',
               password: '${{ secrets.ATP_PASSWORD }}'
             })
             await agent.com.atproto.repo.putRecord({

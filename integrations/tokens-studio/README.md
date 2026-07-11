@@ -17,15 +17,15 @@ node publish.mjs
 
 # Or override with environment variables:
 # Single export file
-ATP_SERVICE="https://pds.example.com" \
-ATP_IDENTIFIER="handle.bsky.social" \
+ATP_PDS_HOST="https://pds.example.com" \
+ATP_USERNAME="handle.bsky.social" \
 ATP_PASSWORD="app-password" \
 TS_TOKEN_FILE="./tokens.json" \
 node publish.mjs
 
 # Directory of theme files (e.g. from Tokens Studio sync)
-ATP_SERVICE="https://pds.example.com" \
-ATP_IDENTIFIER="handle.bsky.social" \
+ATP_PDS_HOST="https://pds.example.com" \
+ATP_USERNAME="handle.bsky.social" \
 ATP_PASSWORD="app-password" \
 TS_TOKEN_DIR="./tokens/" \
 node publish.mjs
@@ -35,8 +35,8 @@ node publish.mjs
 
 | Variable | Required | Default | Description |
 |---|---|---|---|
-| `ATP_SERVICE` | yes | — | PDS URL (e.g. `https://pds.example.com`) |
-| `ATP_IDENTIFIER` | yes | — | Handle or email for atproto login |
+| `ATP_PDS_HOST` | yes | — | PDS URL (e.g. `https://pds.example.com`) |
+| `ATP_USERNAME` | yes | — | Handle or email for atproto login |
 | `ATP_PASSWORD` | yes | — | App password |
 | `ATP_RECORD_KEY` | no | `latest` | Record key for the tokenCollection |
 | `TS_TOKEN_FILE` | no* | — | Path to a single Tokens Studio export JSON |
