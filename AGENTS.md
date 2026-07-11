@@ -29,7 +29,14 @@ Collection: `org.designtxt.tokenCollection`. View/delete at `pdsls.dev/at://<did
 
 ## Lexicon Validation
 
-Whenever a file in the `./lexicons` folder is created or edited, make sure it is valid by running `goat lex lint` and `goat lex status` and fixing any errors or warnings.
+Whenever a file in the `./lexicons` folder is created or edited, validate it:
+
+```bash
+goat lex lint
+goat lex status
+```
+
+Fix any lint errors (`goat lex lint`). The orange icons and DNS warning from `goat lex status` are **expected** — DNS for `_lexicon.designtxt.org` is not configured. That's fine for local/dev use. The `goat lex lint` passes clean (all green).
 
 ## Publishing Lexicons (requires DNS)
 

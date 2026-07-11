@@ -3,6 +3,7 @@ import 'dotenv/config'
 import { readFileSync, existsSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { AtpAgent } from '@atproto/api'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = resolve(__dirname, '..')
@@ -176,8 +177,7 @@ async function main() {
     process.exit(1)
   }
 
-  const { Agent } = await import('@atproto/api')
-  const agent = new Agent({ service: ATP_PDS_HOST })
+  const agent = new AtpAgent({ service: ATP_PDS_HOST })
   await agent.login({ identifier: ATP_USERNAME, password: ATP_PASSWORD })
 
   for (const { id, name } of SYSTEMS) {

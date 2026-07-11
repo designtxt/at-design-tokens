@@ -1,13 +1,9 @@
+.vscode/
+dist/
 node_modules/
-
-.env
+samples/
 
 .DS_Store
-
-*.log
-
+.env
 .sync-state.json
-
-dist/
-
-samples/
+*.log
