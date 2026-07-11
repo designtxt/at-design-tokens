@@ -1,5 +1,7 @@
 # AT Protocol Lexicons for Design Tokens (`org.designtxt`)
 
+Your design tokens should have a single source of truth that's easy to find and doesn't break when someone renames a branch. This project gives them a permanent, network-addressable home on the AT Protocol — so your web app, iOS app, design tools, and CI all fetch from the same canonical values, resolved for the right brand, theme, and breakpoint.
+
 AT Protocol schema definitions for the [DTCG Design Tokens 2025.10](https://www.designtokens.org/TR/2025.10/) stable specification. Maps design tokens (color, dimension, typography, shadow, etc.) into atproto records and XRPC endpoints under the `org.designtxt` namespace.
 
 ---

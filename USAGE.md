@@ -1,13 +1,15 @@
 # Design Team Usage Guide
 
-A practical guide for design teams using AT Protocol to store, share, and resolve design system tokens. The `org.designtxt` lexicons map the DTCG Design Tokens format into atproto records and XRPC endpoints, giving every team an on-protocol source of truth for their design decisions.
+Design tokens are how your team ships design decisions to code. Colors, spacing, type scales, shadows — they power every screen your users see. But keeping them in sync across web, iOS, Android, and design tools is a real problem.
+
+The `org.designtxt` lexicons give your token set a permanent address on the AT Protocol network. Publish once, reference from anywhere. Every consumer — your app, your CI, your design tool plugin — fetches the same canonical values, resolved for the right brand, theme, and breakpoint. No branch confusion, no stale copies, no vendor lock-in.
 
 ---
 
 ## Table of Contents
 
-- [Core Concepts](#core-concepts)
-- [Why AT Protocol?](#why-at-protocol)
+- [Concepts at a Glance](#concepts-at-a-glance)
+- [Why Not Just Use Git?](#why-not-just-use-git)
 - [When Not to Use This](#when-not-to-use-this)
 - [Scenario 1: Single Brand, One Team](#scenario-1-single-brand-one-team)
 - [Scenario 2: Multi-Brand Design System](#scenario-2-multi-brand-design-system)
@@ -19,74 +21,68 @@ A practical guide for design teams using AT Protocol to store, share, and resolv
 
 ---
 
-## Core Concepts
+## Concepts at a Glance
 
-| Term | Meaning |
-|------|---------|
-| **DID** | Decentralized Identifier — the identity that owns the tokens. Every team or individual has one. |
-| **AT-URI** | Protocol address: `at://<did>/<collection>/<rkey>` (like a URL for records). |
-| **record** | A stored document — either a `tokenCollection` (your tokens) or a `resolver` (your rules for combining token sets). |
-| **tokenCollection** | One DTCG-format JSON file. You publish one per brand, per theme, per platform — however you organize. |
-| **resolver** | A document that defines which token collections to use, contextual modifiers (theme, size, role), and the order in which they cascade. |
-| **query** | A read-only fetch. `getTokens` retrieves a token collection, optionally at a sub-path. |
-| **procedure** | A server-side operation. `resolveTokens` takes a resolver + context inputs and returns resolved values. |
-| **string-encoded float** | AT Protocol cannot store floating-point numbers (CBOR limitation). All fractional values — color components, dimension values, durations, bezier points — are stored as strings like `"0.4"` or `"16.5"`. Tools parse them back to native floats on read. |
-| **metadata fields** | `tokenCollection` records support optional `name`, `description`, and `createdAt` fields at the root level alongside the token tree. Use `name` for human-friendly identification like `"Brand Tokens"` or `"My Design System Q3"`. |
+| Term | What it means |
+|------|---------------|
+| **DID** | Your identity on the network. Every publisher has one. |
+| **AT-URI** | A permanent address for a record, like a URL that never breaks. |
+| **tokenCollection** | One DTCG token file, published as a record. One per brand, theme, or platform — however you organize. |
+| **resolver** | A document that says which token collections to use, when (light/dark mode, mobile/desktop), and in what order. |
+| **getTokens** | Fetch a token collection — the whole thing, or just a subtree like `/color`. |
+| **resolveTokens** | Hand your resolver a context ("dark mode, mobile") and get back resolved values. No client-side parsing needed. |
+| **string-encoded float** | AT Protocol can't store decimal numbers directly, so fractional values like `0.4` or `16.5` are stored as strings. Your tools handle the conversion. |
+| **metadata fields** | `tokenCollection` records can have `name`, `description`, and `createdAt` alongside the token tree for easy identification. |
 
 ---
 
-## Why AT Protocol?
+## Why Not Just Use Git?
 
-Traditional design token storage usually means a JSON file in a Git repo, a Figma plugin export, or a vendor-specific token management SaaS. AT Protocol offers structural advantages over all of them.
+Most teams keep tokens in a JSON file in their design system repo. That works — until you have three brands, two themes, four breakpoints, and consumers on web, iOS, Android, and Figma all trying to fetch the right values.
 
-### Every token collection has a stable, resolvable address
+| Concern | Git | This approach |
+|---------|-----|---------------|
+| **Address** | A file path + branch + commit — changes every PR | One permanent URI, always points to the latest |
+| **Who published it** | Optional GPG signature, manually set | Signed by your identity automatically |
+| **Where it lives** | Tied to GitHub (or whichever host) | Any AT Protocol server, switchable |
+| **Fetching just the colors** | Grep the file or build an API wrapper | Native sub-path queries: `/color` |
+| **Resolving aliases** | Custom script needed | Built-in: resolves `{path.to.token}` on the server |
+| **Theming** | Custom logic per platform | Declare your modifiers (theme, breakpoint) in one resolver document |
 
-An AT-URI like `at://did:plc:abc123/org.designtxt.tokenCollection/v1` is a permanent, network-addressable identifier. It does not depend on GitHub being up, a specific branch name, or a CDN cache. Any AT Protocol PDS (Personal Data Server) can serve it. Your CI, your web app, your design tool plugin, and your coworker's local dev environment all fetch from the same canonical URI.
+AT Protocol is not a replacement for Git in general — but it is a much better fit for the specific problem of publishing, addressing, and resolving structured design data across many consumers.
 
-Compare this to a Git-based approach where the same file might live at:
+### Every token set has a permanent address
 
-- `main` branch → `tokens/latest.json`
-- your PR → `feature/update-colors/tokens.json`
-- a release tag → `v1.2.3/tokens.json`
+An AT-URI like `at://my-team/org.designtxt.tokenCollection/v1` always points to the latest version. It doesn't depend on GitHub being up, a specific branch existing, or a CDN cache. Your design tool plugin, your CI, and your coworker's dev machine all fetch from the same URI. No more "which branch has the updated colors?" conversations.
 
-All of these are different paths, different URLs (if they have URLs at all), and require authentication middleware to resolve. AT Protocol collapses this to a single, stable URI that never moves.
+### Shared tokens without copy-paste
 
-### Built-in identity and ownership
+A font foundry publishes its type scale as a `tokenCollection`. Your resolver references it by URI. When they update it, your next `resolveTokens` call picks up the changes automatically — no npm publish, no PR to update a dependency, no stale values in your repo.
 
-Every token set is cryptographically tied to a DID. You know who published it, you can verify authorship, and you can set permissions per-repository. This matters for:
+### Theming and variants are declarative
 
-- **Vendor tokens** — a font foundry publishes its type scale as a `tokenCollection` you reference by URI instead of copy-pasting
-- **Cross-team sharing** — Team A references Team B's spacing scale via AT-URI, not a git submodule or npm dependency
-- **Audit trail** — every update to a token set is a new record version in the repo, signed by the publisher's DID
+Instead of writing theme-switching logic in every consumer, you declare your modifiers once in a resolver document:
 
-### Federation means no single point of failure
+```json
+{
+  "modifiers": {
+    "theme": {
+      "contexts": { "light": [...], "dark": [...] },
+      "default": "light"
+    }
+  }
+}
+```
 
-Your tokens are not locked into any single vendor. You choose your PDS — self-host it, use a public one, or switch providers without changing your token URIs. If a SaaS token platform goes down or changes its pricing, your tokens are still available from any other PDS that hosts your data.
+Every client sends `input: { theme: "dark" }` and gets back fully resolved values. Same endpoint for web, iOS, Android, and your design tool.
 
-### Resolution is a server-side concern
+### You can always go back
 
-The `resolveTokens` procedure handles alias resolution, modifier cascading, and context matching on the server. The client sends `input: { theme: "dark", viewport: "mobile" }` and gets back resolved values. No client-side DTCG parser, no tree-walking alias resolution, no duplicated logic across platforms. Your web app, iOS app, Android app, and design tool plugin all call the same endpoint.
+Every update creates a new version automatically. Fetch any previous iteration by its content hash — no need to set up your own versioning or retention policy. If something breaks, you can pin to the last known good state.
 
-### Versioning is free
+### No vendor lock-in
 
-AT Protocol repos are content-addressed Merkle Search Trees — every mutation (create, update, delete) produces a new commit with a different root hash, and the old tree is not destroyed ([repo spec](https://atproto.com/specs/repository)). The [`putRecord`](https://github.com/bluesky-social/atproto/blob/main/lexicons/com/atproto/repo/putRecord.json) endpoint creates or updates a record at a given key, and [`getRecord`](https://github.com/bluesky-social/atproto/blob/main/lexicons/com/atproto/repo/getRecord.json) accepts an optional `cid` parameter — **"The CID of the version of the record. If not specified, then return the most recent version"** — which means you can fetch any previous iteration by its content hash. There is no need to set up your own versioning scheme or retention policy.
-
-### Cross-referencing without copying
-
-A resolver document references token collections by AT-URI. You never copy token values from one set into another. When the foundation team updates `color.brand.primary`, every resolver that references it picks up the change automatically on the next `resolveTokens` call. No npm publish, no PR to update consumers, no stale copies.
-
-### Why not just use Git?
-
-| Concern | Git | AT Protocol |
-|---------|-----|-------------|
-| Addressing | File path + branch + commit | Single stable AT-URI |
-| Identity | GPG signatures (optional, manual) | DID (required, automatic) |
-| Server | GitHub/GitLab/self-hosted | Any PDS, switchable |
-| Querying | `git show`, grep, or an API wrapper | Native XRPC: sub-path fetch, alias resolution |
-| Resolution | Custom tooling required | Built-in `resolveTokens` procedure |
-| Access control | Repo-level | Per-repo AT Protocol permissions |
-
-AT Protocol is not a replacement for Git in general. It is a better fit for the specific problem of publishing, addressing, and resolving structured design data across many consumers.
+Your tokens live on an AT Protocol server (a PDS), not a proprietary SaaS. You can switch providers, self-host, or use multiple servers — your token URIs stay the same. If a vendor changes their pricing or goes down, your tokens are still available.
 
 ---
 
