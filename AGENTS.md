@@ -38,6 +38,10 @@ goat lex status
 
 Fix any lint errors (`goat lex lint`). The orange icons and DNS warning from `goat lex status` are **expected** — DNS for `_lexicon.designtxt.org` is not configured. That's fine for local/dev use. The `goat lex lint` passes clean (all green).
 
+## Token Viewer
+
+`index.html` at the project root is a standalone static viewer. Open it in a browser (or `python3 -m http.server`) and enter a PDS URL + handle to browse token collections visually. Auto-connects with the demo defaults.
+
 ## Publishing Lexicons (requires DNS)
 
 ```bash
