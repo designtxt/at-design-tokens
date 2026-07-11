@@ -1,5 +1,8 @@
 # Design Tokens on the AT Protocol
 
+> [!CAUTION]
+> This project is an experimental proof of concept, and most of the docs and code are AI-generated. Proceed at your own risk.
+
 Design tokens are how your team ships design decisions to code. Colors, spacing, type scales, shadows — they power every screen your users see. But keeping them in sync across products and platforms is a mess of branch confusion, stale copies, and "which file has the latest colors?"
 
 **org.designtxt** is a standard way to publish your design tokens on the AT Protocol network (the same open protocol behind Bluesky). Publish your token file once to a permanent address. Your web app, iOS app, design tools, and CI all fetch from the same source, resolved for the right brand, theme, and breakpoint. No vendor lock-in, no "check the README for the right branch."
