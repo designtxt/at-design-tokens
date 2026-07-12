@@ -1,6 +1,3 @@
 name = "designtxt-tokens"
 main = "src/index.ts"
 compatibility_date = "2026-07-11"
-
-[env.production]
-routes = [{ pattern = "xrpc.designtxt.org/*", zone_name = "designtxt.org" }]

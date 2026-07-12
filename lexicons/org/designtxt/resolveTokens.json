@@ -1,7 +1,7 @@
 {
   "lexicon": 1,
   "id": "org.designtxt.resolveTokens",
-  "description": "XRPC Procedure to resolve a design token resolver document against a set of contextual inputs, producing a fully resolved token collection. Implemented at https://xrpc.designtxt.org/xrpc/org.designtxt.resolveTokens",
+  "description": "XRPC Procedure to resolve a design token resolver document against a set of contextual inputs, producing a fully resolved token collection. Implemented at https://designtxt-tokens.bomberstudios.workers.dev/xrpc/org.designtxt.resolveTokens",
   "defs": {
     "main": {
       "type": "procedure",
