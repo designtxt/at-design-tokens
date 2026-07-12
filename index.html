@@ -312,6 +312,7 @@
         transition: opacity .15s, color .15s, background .15s;
         opacity: 0;
         font-size: 14px;
+        will-change: opacity;
       }
 
       .token-card:hover .card-btn {
@@ -1329,65 +1330,65 @@
         }).join('')
       }
 
-          content.addEventListener('click', (e) => {
-            const btn = e.target.closest('.card-btn-raw, .card-btn-advanced')
-            if (!btn) return
-            const wrapper = btn.closest('.token-card-wrapper')
-            if (!wrapper) return
-            const card = wrapper.querySelector('.token-card')
-            if (!card) return
-            if (btn.classList.contains('card-btn-raw')) {
-              let raw = card.querySelector('.token-raw')
-              if (!raw) {
-                const t = state.tokenPathMap.get(wrapper.dataset.path)
-                if (!t) return
-                const json = JSON.stringify(t.token, null, 2)
-                raw = document.createElement('div')
-                raw.className = 'token-raw'
-                raw.innerHTML = '<copy-button class="copy-btn-raw" value="' + escapeHtml(json) + '" title="Copy raw JSON"></copy-button><pre>' + escapeHtml(json) + '</pre>'
-                card.appendChild(raw)
-              }
-              raw.classList.toggle('open')
-              btn.classList.toggle('active')
-            } else {
-              let adv = card.querySelector('.token-advanced')
-              if (!adv) {
-                const t = state.tokenPathMap.get(wrapper.dataset.path)
-                if (!t) return
-                const cssSnippet = generateCssSnippet(t)
-                const tailwindSnippet = generateTailwindSnippet(t)
-                if (!cssSnippet && !tailwindSnippet) return
-                adv = document.createElement('div')
-                adv.className = 'token-advanced'
-                let inner = ''
-                if (cssSnippet) {
-                  inner += '<div class="token-advanced-section"><div class="token-advanced-label">Computed CSS</div>'
-                  inner += '<div class="token-advanced-code"><copy-button class="copy-btn-raw" value="' + escapeHtml(cssSnippet) + '" title="Copy CSS"></copy-button>' + escapeHtml(cssSnippet) + '</div></div>'
-                }
-                if (tailwindSnippet) {
-                  inner += '<div class="token-advanced-section"><div class="token-advanced-label">Tailwind Config</div>'
-                  inner += '<div class="token-advanced-code"><copy-button class="copy-btn-raw" value="' + escapeHtml(tailwindSnippet) + '" title="Copy Tailwind config"></copy-button>' + escapeHtml(tailwindSnippet) + '</div></div>'
-                }
-                adv.innerHTML = inner
-                card.appendChild(adv)
-              }
-              adv.classList.toggle('open')
-              btn.classList.toggle('active')
-            }
-          })
+      content.addEventListener('click', (e) => {
+        const refLink = e.target.closest('.token-ref-link')
+        if (refLink) {
+          const path = refLink.dataset.tokenPath
+          const target = document.getElementById('token-' + cssId(path))
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' })
+            target.style.outline = '2px solid var(--accent)'
+            target.style.outlineOffset = '2px'
+            setTimeout(() => target.style.outline = '', 2000)
+          }
+          return
+        }
 
-          content.addEventListener('click', (e) => {
-            const refLink = e.target.closest('.token-ref-link')
-            if (!refLink) return
-            const path = refLink.dataset.tokenPath
-            const target = document.getElementById('token-' + cssId(path))
-            if (target) {
-              target.scrollIntoView({ behavior: 'smooth', block: 'center' })
-              target.style.outline = '2px solid var(--accent)'
-              target.style.outlineOffset = '2px'
-              setTimeout(() => target.style.outline = '', 2000)
+        const btn = e.target.closest('.card-btn-raw, .card-btn-advanced')
+        if (!btn) return
+        const wrapper = btn.closest('.token-card-wrapper')
+        if (!wrapper) return
+        const card = wrapper.querySelector('.token-card')
+        if (!card) return
+        if (btn.classList.contains('card-btn-raw')) {
+          let raw = card.querySelector('.token-raw')
+          if (!raw) {
+            const t = state.tokenPathMap.get(wrapper.dataset.path)
+            if (!t) return
+            const json = JSON.stringify(t.token, null, 2)
+            raw = document.createElement('div')
+            raw.className = 'token-raw'
+            raw.innerHTML = '<copy-button class="copy-btn-raw" value="' + escapeHtml(json) + '" title="Copy raw JSON"></copy-button><pre>' + escapeHtml(json) + '</pre>'
+            card.appendChild(raw)
+          }
+          raw.classList.toggle('open')
+          btn.classList.toggle('active')
+        } else {
+          let adv = card.querySelector('.token-advanced')
+          if (!adv) {
+            const t = state.tokenPathMap.get(wrapper.dataset.path)
+            if (!t) return
+            const cssSnippet = generateCssSnippet(t)
+            const tailwindSnippet = generateTailwindSnippet(t)
+            if (!cssSnippet && !tailwindSnippet) return
+            adv = document.createElement('div')
+            adv.className = 'token-advanced'
+            let inner = ''
+            if (cssSnippet) {
+              inner += '<div class="token-advanced-section"><div class="token-advanced-label">Computed CSS</div>'
+              inner += '<div class="token-advanced-code"><copy-button class="copy-btn-raw" value="' + escapeHtml(cssSnippet) + '" title="Copy CSS"></copy-button>' + escapeHtml(cssSnippet) + '</div></div>'
             }
-          })
+            if (tailwindSnippet) {
+              inner += '<div class="token-advanced-section"><div class="token-advanced-label">Tailwind Config</div>'
+              inner += '<div class="token-advanced-code"><copy-button class="copy-btn-raw" value="' + escapeHtml(tailwindSnippet) + '" title="Copy Tailwind config"></copy-button>' + escapeHtml(tailwindSnippet) + '</div></div>'
+            }
+            adv.innerHTML = inner
+            card.appendChild(adv)
+          }
+          adv.classList.toggle('open')
+          btn.classList.toggle('active')
+        }
+      })
 
       function showRecord(idx) {
         state.activeRecordIdx = idx
