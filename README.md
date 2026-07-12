@@ -36,7 +36,7 @@ Full reference: [`LEXICON_REFERENCE.md`](./LEXICON_REFERENCE.md) | Usage guide: 
 
 The `getTokens` and `resolveTokens` endpoints are implemented as a Cloudflare Worker.
 
-**Endpoint:** `https://designtxt-tokens.bomberstudios.workers.dev`
+**Endpoint:** `https://xrpc.designtxt.org`
 
 - `GET /xrpc/org.designtxt.getTokens` — Retrieve tokens with optional path extraction and reference resolution
 - `POST /xrpc/org.designtxt.resolveTokens` — Resolve a resolver document against contextual inputs
