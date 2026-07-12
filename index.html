@@ -1186,7 +1186,7 @@
       const content = document.getElementById('content')
       const searchInput = document.getElementById('searchInput')
 
-          let state = { pds: '', did: '', handle: '', records: [], activeRecordIdx: 0, flatTokens: [], filteredTokens: [], tokenMap: new Map(), tokenPathMap: new Map() }
+      let state = { pds: '', did: '', handle: '', records: [], activeRecordIdx: 0, flatTokens: [], filteredTokens: [], tokenMap: new Map(), tokenPathMap: new Map(), collectionTokenMap: new Map() }
 
       atUrlInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') loadFromAtUrl(atUrlInput.value.trim())
@@ -1256,6 +1256,14 @@
           })
 
           state = { ...state, pds, did, handle, records, activeRecordIdx: 0 }
+
+          state.collectionTokenMap = new Map()
+          for (const rec of records) {
+            const tokens = flattenTree(rec.value)
+            for (const t of tokens) {
+              if (!state.collectionTokenMap.has(t.path)) state.collectionTokenMap.set(t.path, t.token)
+            }
+          }
 
           buildRecordTabs()
           showRecord(0)
@@ -1394,12 +1402,10 @@
         state.activeRecordIdx = idx
         atUrlInput.value = state.records[idx].uri
         state.flatTokens = flattenTree(state.records[idx].value)
-        state.tokenMap = new Map()
         state.tokenPathMap = new Map()
         for (const t of state.flatTokens) {
-          state.tokenMap.set(t.path, t.token)
           state.tokenPathMap.set(t.path, t)
-          if (hasRefs(t.token.$value)) t._resolved = resolveTokenRefs(t.token.$value)
+          if (hasRefs(t.token.$value)) t._resolved = resolveTokenRefs(t.token.$value, state.collectionTokenMap)
         }
         state.filteredTokens = state.flatTokens
         searchInput.style.display = 'block'
@@ -1740,8 +1746,8 @@
         return html
       }
 
-      function resolveTokenRefs(v) {
-        const tokenMap = state.tokenMap
+      function resolveTokenRefs(v, tokenMap) {
+        tokenMap = tokenMap || state.collectionTokenMap
         function walk(val) {
           if (typeof val === 'string' && /^\{[\w.]+\}$/.test(val)) {
             const path = val.slice(1, -1)
