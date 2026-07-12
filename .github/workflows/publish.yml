@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'lexicons/**'
+  workflow_dispatch:
 
 jobs:
   publish:
