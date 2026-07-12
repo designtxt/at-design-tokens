@@ -258,25 +258,13 @@
         padding: 12px 0;
       }
 
-      .token-subgroup {
-        margin-bottom: 12px;
-        padding-left: 12px;
-        border-left: 2px solid var(--border);
-      }
 
-      .token-subgroup-title {
-        font-size: 10px;
-        font-weight: 600;
-        margin-bottom: 6px;
-        color: var(--text-dim);
-        text-transform: uppercase;
-        letter-spacing: .06em;
-      }
 
       .token-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
         gap: 10px;
+        margin-bottom: 12px;
       }
 
       .token-card {
@@ -284,7 +272,6 @@
         border: 1px solid var(--border);
         border-radius: var(--radius);
         padding: 0.7rem 1rem 1rem 1rem;
-        transition: box-shadow .2s, border-color .2s;
         box-shadow: var(--shadow-card);
         display: flex;
         flex-direction: column;
@@ -1124,55 +1111,6 @@
       }
       customElements.define('record-tab', RecordTab)
 
-      // ─── Token Card WebComponent ──────────────────────────────────────────
-
-      class TokenCard extends HTMLElement {
-        connectedCallback() {
-          this._render()
-        }
-
-        _render() {
-          const path = this.getAttribute('path')
-          if (!path) return
-          const token = state.flatTokens.find(t => t.path === path)
-          if (!token) return
-          this.innerHTML = renderTokenCard(token)
-          this._attachEvents()
-        }
-
-        _attachEvents() {
-          this.querySelector('.card-btn-raw')?.addEventListener('click', () => {
-            const raw = this.querySelector('.token-raw')
-            if (raw) {
-              raw.classList.toggle('open')
-              this.querySelector('.card-btn-raw')?.classList.toggle('active')
-            }
-          })
-
-          this.querySelector('.card-btn-advanced')?.addEventListener('click', () => {
-            const adv = this.querySelector('.token-advanced')
-            if (adv) {
-              adv.classList.toggle('open')
-              this.querySelector('.card-btn-advanced')?.classList.toggle('active')
-            }
-          })
-
-          this.querySelectorAll('.token-ref-link').forEach(el => {
-            el.addEventListener('click', () => {
-              const path = el.dataset.tokenPath
-              const target = document.getElementById('token-' + cssId(path))
-              if (target) {
-                target.scrollIntoView({ behavior: 'smooth', block: 'center' })
-                target.style.outline = '2px solid var(--accent)'
-                target.style.outlineOffset = '2px'
-                setTimeout(() => target.style.outline = '', 2000)
-              }
-            })
-          })
-        }
-      }
-      customElements.define('token-card', TokenCard)
-
       // ─── AT Protocol helpers ──────────────────────────────────────────────
 
       // ─── DTCG helpers ─────────────────────────────────────────────────────
@@ -1247,7 +1185,7 @@
       const content = document.getElementById('content')
       const searchInput = document.getElementById('searchInput')
 
-      let state = { pds: '', did: '', handle: '', records: [], activeRecordIdx: 0, flatTokens: [], filteredTokens: [], tokenMap: new Map() }
+          let state = { pds: '', did: '', handle: '', records: [], activeRecordIdx: 0, flatTokens: [], filteredTokens: [], tokenMap: new Map(), tokenPathMap: new Map() }
 
       atUrlInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') loadFromAtUrl(atUrlInput.value.trim())
@@ -1391,12 +1329,77 @@
         }).join('')
       }
 
+          content.addEventListener('click', (e) => {
+            const btn = e.target.closest('.card-btn-raw, .card-btn-advanced')
+            if (!btn) return
+            const wrapper = btn.closest('.token-card-wrapper')
+            if (!wrapper) return
+            const card = wrapper.querySelector('.token-card')
+            if (!card) return
+            if (btn.classList.contains('card-btn-raw')) {
+              let raw = card.querySelector('.token-raw')
+              if (!raw) {
+                const t = state.tokenPathMap.get(wrapper.dataset.path)
+                if (!t) return
+                const json = JSON.stringify(t.token, null, 2)
+                raw = document.createElement('div')
+                raw.className = 'token-raw'
+                raw.innerHTML = '<copy-button class="copy-btn-raw" value="' + escapeHtml(json) + '" title="Copy raw JSON"></copy-button><pre>' + escapeHtml(json) + '</pre>'
+                card.appendChild(raw)
+              }
+              raw.classList.toggle('open')
+              btn.classList.toggle('active')
+            } else {
+              let adv = card.querySelector('.token-advanced')
+              if (!adv) {
+                const t = state.tokenPathMap.get(wrapper.dataset.path)
+                if (!t) return
+                const cssSnippet = generateCssSnippet(t)
+                const tailwindSnippet = generateTailwindSnippet(t)
+                if (!cssSnippet && !tailwindSnippet) return
+                adv = document.createElement('div')
+                adv.className = 'token-advanced'
+                let inner = ''
+                if (cssSnippet) {
+                  inner += '<div class="token-advanced-section"><div class="token-advanced-label">Computed CSS</div>'
+                  inner += '<div class="token-advanced-code"><copy-button class="copy-btn-raw" value="' + escapeHtml(cssSnippet) + '" title="Copy CSS"></copy-button>' + escapeHtml(cssSnippet) + '</div></div>'
+                }
+                if (tailwindSnippet) {
+                  inner += '<div class="token-advanced-section"><div class="token-advanced-label">Tailwind Config</div>'
+                  inner += '<div class="token-advanced-code"><copy-button class="copy-btn-raw" value="' + escapeHtml(tailwindSnippet) + '" title="Copy Tailwind config"></copy-button>' + escapeHtml(tailwindSnippet) + '</div></div>'
+                }
+                adv.innerHTML = inner
+                card.appendChild(adv)
+              }
+              adv.classList.toggle('open')
+              btn.classList.toggle('active')
+            }
+          })
+
+          content.addEventListener('click', (e) => {
+            const refLink = e.target.closest('.token-ref-link')
+            if (!refLink) return
+            const path = refLink.dataset.tokenPath
+            const target = document.getElementById('token-' + cssId(path))
+            if (target) {
+              target.scrollIntoView({ behavior: 'smooth', block: 'center' })
+              target.style.outline = '2px solid var(--accent)'
+              target.style.outlineOffset = '2px'
+              setTimeout(() => target.style.outline = '', 2000)
+            }
+          })
+
       function showRecord(idx) {
         state.activeRecordIdx = idx
         atUrlInput.value = state.records[idx].uri
         state.flatTokens = flattenTree(state.records[idx].value)
         state.tokenMap = new Map()
-        for (const t of state.flatTokens) state.tokenMap.set(t.path, t.token)
+        state.tokenPathMap = new Map()
+        for (const t of state.flatTokens) {
+          state.tokenMap.set(t.path, t.token)
+          state.tokenPathMap.set(t.path, t)
+          if (hasRefs(t.token.$value)) t._resolved = resolveTokenRefs(t.token.$value)
+        }
         state.filteredTokens = state.flatTokens
         searchInput.style.display = 'block'
         searchInput.value = ''
@@ -1427,7 +1430,7 @@
         html += '</div></div>'
         const groups = {}
         for (const t of tokens) {
-          const top = t.path.split('.')[0]
+          const top = t.type || 'other'
           if (!groups[top]) groups[top] = []
           groups[top].push(t)
         }
@@ -1473,12 +1476,12 @@
                 if (NUMERIC_TYPES.has(b.type)) return 1
                 return 0
               })
-              html += '<div class="token-subgroup"><div class="token-subgroup-title">' + subName + '</div><div class="token-grid">'
-              for (const t of subTokens) html += '<token-card path="' + t.path + '"></token-card>'
-              html += '</div></div>'
+              html += '<div class="token-grid">'
+              for (const t of subTokens) html += '<div class="token-card-wrapper" data-path="' + t.path + '">' + renderTokenCard(t) + '</div>'
+              html += '</div>'
             } else {
               html += '<div class="token-grid">'
-              for (const t of subTokens) html += '<token-card path="' + t.path + '"></token-card>'
+              for (const t of subTokens) html += '<div class="token-card-wrapper" data-path="' + t.path + '">' + renderTokenCard(t) + '</div>'
               html += '</div>'
             }
           }
@@ -1710,7 +1713,7 @@
       function renderTokenCard(t) {
         const v = t.token.$value, type = t.type, desc = t.token.$description
         const hasRef = hasRefs(v)
-        const resolved = hasRef ? resolveTokenRefs(v) : v
+        const resolved = t._resolved !== undefined ? t._resolved : (hasRef ? resolveTokenRefs(v) : v)
         let rendered = ''
         if (type && resolved !== undefined) rendered = renderTypeValue(type, resolved, t.path)
         let html = '<div class="token-card" id="token-' + cssId(t.path) + '">'
@@ -1732,26 +1735,6 @@
           const links = refs.map(r => '<span class="token-ref-link" data-token-path="' + r.slice(1, -1) + '">' + r + '</span>')
           html += '<div class="token-ref-label">' + links.join('') + '</div>'
         }
-        const cssSnippet = generateCssSnippet(t)
-        const tailwindSnippet = generateTailwindSnippet(t)
-        if (cssSnippet || tailwindSnippet) {
-          html += '<div class="token-advanced">'
-          if (cssSnippet) {
-            html += '<div class="token-advanced-section">'
-            html += '<div class="token-advanced-label">Computed CSS</div>'
-            html += '<div class="token-advanced-code"><copy-button class="copy-btn-raw" value="' + escapeHtml(cssSnippet) + '" title="Copy CSS"></copy-button>' + escapeHtml(cssSnippet) + '</div>'
-            html += '</div>'
-          }
-          if (tailwindSnippet) {
-            html += '<div class="token-advanced-section">'
-            html += '<div class="token-advanced-label">Tailwind Config</div>'
-            html += '<div class="token-advanced-code"><copy-button class="copy-btn-raw" value="' + escapeHtml(tailwindSnippet) + '" title="Copy Tailwind config"></copy-button>' + escapeHtml(tailwindSnippet) + '</div>'
-            html += '</div>'
-          }
-          html += '</div>'
-        }
-        const raw = JSON.stringify(t.token, null, 2)
-        html += '<div class="token-raw"><copy-button class="copy-btn-raw" value="' + escapeHtml(raw) + '" title="Copy raw JSON"></copy-button><pre>' + escapeHtml(raw) + '</pre></div>'
         html += '</div>'
         return html
       }
