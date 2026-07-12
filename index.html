@@ -214,7 +214,7 @@
 
       /* Content */
       .content {
-        padding: 20px 24px;
+        padding: 0 24px 20px;
         overflow-y: auto;
         background: var(--bg);
       }
@@ -226,6 +226,7 @@
       .content-header h2 {
         font-size: 18px;
         font-weight: 600;
+        margin-top: 1rem;
       }
 
       .content-header .meta {
@@ -239,12 +240,34 @@
 
       .token-group {
         margin-bottom: 20px;
+        position: relative;
       }
 
       .token-group-title {
-        font-size: 11px;
+        font-size: 12px;
+        font-weight: 400;
+        letter-spacing: 20%;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        position: sticky;
+        top: 0;
+        background: color-mix(in srgb, var(--bg) 80%, transparent);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        z-index: 1;
+        padding: 12px 0;
+      }
+
+      .token-subgroup {
+        margin-bottom: 12px;
+        padding-left: 12px;
+        border-left: 2px solid var(--border);
+      }
+
+      .token-subgroup-title {
+        font-size: 10px;
         font-weight: 600;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
         color: var(--text-dim);
         text-transform: uppercase;
         letter-spacing: .06em;
@@ -501,8 +524,8 @@
       }
 
       .render-color .swatch {
-        width: 44px;
-        height: 44px;
+        width: 80px;
+        height: 80px;
         border-radius: 2px;
         /* border: 1px solid var(--border); */
         flex-shrink: 0;
@@ -1411,10 +1434,55 @@
         const GROUP_ORDER = ['color', 'typography', 'font', 'text', 'spacing', 'space', 'size', 'dimension', 'layout', 'border', 'radius', 'outline', 'shadow', 'elevation', 'opacity', 'motion', 'animation', 'transition', 'duration', 'easing', 'icon', 'media', 'breakpoint', 'zindex']
         const groupRank = g => { const i = GROUP_ORDER.indexOf(g.toLowerCase()); return i >= 0 ? i : 99 + g.charCodeAt(0) }
         const sorted = Object.entries(groups).sort((a, b) => groupRank(a[0]) - groupRank(b[0]))
+        const NUMERIC_TYPES = new Set(['dimension', 'number', 'duration'])
+        function tokenNumVal(t) {
+          const v = t.token.$value
+          if (typeof v === 'number') return v
+          if (typeof v === 'string') return parseFloatSafe(v)
+          if (v && typeof v === 'object') return parseFloatSafe(v.value)
+          return 0
+        }
+        for (const [, gTokens] of sorted) {
+          gTokens.sort((a, b) => {
+            if (NUMERIC_TYPES.has(a.type) && NUMERIC_TYPES.has(b.type)) return tokenNumVal(a) - tokenNumVal(b)
+            if (NUMERIC_TYPES.has(a.type)) return -1
+            if (NUMERIC_TYPES.has(b.type)) return 1
+            return 0
+          })
+        }
         for (const [g, gTokens] of sorted) {
-          html += '<div class="token-group"><div class="token-group-title">' + g + '</div><div class="token-grid">'
-          for (const t of gTokens) html += '<token-card path="' + t.path + '"></token-card>'
-          html += '</div></div>'
+          const sub = {}
+          for (const t of gTokens) {
+            const rest = t.path.slice(g.length + 1)
+            const parts = rest.split('.')
+            const key = parts.length > 1 ? parts[0] : ''
+            if (!sub[key]) sub[key] = []
+            sub[key].push(t)
+          }
+          const subEntries = Object.entries(sub).sort((a, b) => {
+            if (a[0] === '') return 1
+            if (b[0] === '') return -1
+            return a[0].localeCompare(b[0])
+          })
+          html += '<div class="token-group"><div class="token-group-title">' + g + '</div>'
+          for (const [subName, subTokens] of subEntries) {
+            if (subName && subTokens.length > 1) {
+              subTokens.sort((a, b) => {
+                if (NUMERIC_TYPES.has(a.type) && NUMERIC_TYPES.has(b.type)) return tokenNumVal(a) - tokenNumVal(b)
+                if (NUMERIC_TYPES.has(a.type)) return -1
+                if (NUMERIC_TYPES.has(b.type)) return 1
+                return 0
+              })
+              html += '<div class="token-subgroup"><div class="token-subgroup-title">' + subName + '</div><div class="token-grid">'
+              for (const t of subTokens) html += '<token-card path="' + t.path + '"></token-card>'
+              html += '</div></div>'
+            } else {
+              html += '<div class="token-grid">'
+              for (const t of subTokens) html += '<token-card path="' + t.path + '"></token-card>'
+              html += '</div>'
+            }
+          }
+          html += '</div>'
         }
         content.innerHTML = html
 
@@ -1769,9 +1837,14 @@
         }
         if (typeof v !== 'object') return ''
         const css = colorToCSS(v)
-        const hex = v.hex || ''
+        let hex = v.hex || ''
         const alpha = v.alpha != null ? parseFloatSafe(v.alpha) : 1
         const cs = v.colorSpace || ''
+        if (alpha < 1 && hex) {
+          const a = Math.round(alpha * 255).toString(16).padStart(2, '0')
+          hex = hex.replace(/^#/, '').slice(0, 6) + a
+          if (!hex.startsWith('#')) hex = '#' + hex
+        }
         const alphaStr = alpha < 1 ? '<div style="font-size:10px;color:var(--text-dim)">alpha ' + alpha.toFixed(2) + '</div>' : ''
         return '<div class="render-color"><checker-grid class="swatch"><div class="swatch-inner" style="background:' + css + '"></div></checker-grid><div class="color-info"><div class="color-row"><span class="hex">' + hex + '</span><copy-button class="card-btn" value="' + hex + '" title="Copy hex"></copy-button></div><div class="color-space">' + cs + '</div>' + alphaStr + '</div></div>'
       }
