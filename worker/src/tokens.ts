@@ -32,18 +32,18 @@ export async function handleGetTokens(params: GetTokensParams): Promise<Response
 
   let tokens = record.value
 
+  if (params.resolveReferences) {
+    const tokenMap = new Map<string, any>()
+    flattenTokens(tokens, null, '', tokenMap)
+    tokens = resolveRefs(tokens, tokenMap)
+  }
+
   if (params.path) {
     try {
       tokens = extractSubtree(tokens, params.path)
     } catch (e: any) {
       return xrpcError('InvalidRequest', `Path not found: ${params.path}`, 400)
     }
-  }
-
-  if (params.resolveReferences) {
-    const tokenMap = new Map<string, any>()
-    flattenTokens(tokens, null, '', tokenMap)
-    tokens = resolveRefs(tokens, tokenMap)
   }
 
   return jsonResponse({
