@@ -7,6 +7,7 @@
     <title>Token Viewer</title>
     <style>
       :root {
+        color-scheme: light dark;
         --bg: #f8f9fa;
         --surface: #ffffff;
         --border: #d0d7de;
@@ -21,9 +22,11 @@
         --hover-border: var(--accent-dim);
         --shadow-card: 0 1px 3px rgba(31, 35, 40, 0.08), 0 1px 2px rgba(31, 35, 40, 0.06);
         --shadow-card-hover: 0 4px 12px rgba(31, 35, 40, 0.12);
+        --checker-color: light-dark(#e0e0e0, #30363d);
       }
 
-      [data-theme="dark"] {
+      html[color-scheme="dark"] {
+        color-scheme: dark;
         --bg: #0d1117;
         --surface: #161b22;
         --border: #30363d;
@@ -378,7 +381,7 @@
         margin-left: auto;
       }
 
-      [data-theme="dark"] .token-type-badge {
+      html[color-scheme="dark"] .token-type-badge {
         background: rgba(255, 102, 0, 0.12);
         color: #f60;
       }
@@ -441,12 +444,6 @@
         border-radius: 2px;
         /* border: 1px solid var(--border); */
         flex-shrink: 0;
-        background-size: 12px 12px;
-        background-position: 0 0, 0 6px, 6px -6px, -6px 0;
-        background-image: linear-gradient(45deg, #e0e0e0 25%, transparent 25%),
-          linear-gradient(-45deg, #e0e0e0 25%, transparent 25%),
-          linear-gradient(45deg, transparent 75%, #e0e0e0 75%),
-          linear-gradient(-45deg, transparent 75%, #e0e0e0 75%);
       }
 
       .render-color .swatch-inner {
@@ -496,12 +493,6 @@
         border-radius: 6px;
         border: 1px solid var(--border);
         flex-shrink: 0;
-        background-size: 12px 12px;
-        background-position: 0 0, 0 6px, 6px -6px, -6px 0;
-        background-image: linear-gradient(45deg, #e0e0e0 25%, transparent 25%),
-          linear-gradient(-45deg, #e0e0e0 25%, transparent 25%),
-          linear-gradient(45deg, transparent 75%, #e0e0e0 75%),
-          linear-gradient(-45deg, transparent 75%, #e0e0e0 75%);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -516,13 +507,6 @@
 
       .render-dimension .dim-preview .dim-box {
         background: var(--accent);
-      }
-
-      [data-theme="dark"] .render-dimension .dim-preview {
-        background-image: linear-gradient(45deg, #30363d 25%, transparent 25%),
-          linear-gradient(-45deg, #30363d 25%, transparent 25%),
-          linear-gradient(45deg, transparent 75%, #30363d 75%),
-          linear-gradient(-45deg, transparent 75%, #30363d 75%);
       }
 
       .render-dimension .dim-info {
@@ -595,24 +579,11 @@
       .dim-overlay .dim-full-area {
         width: 80vw;
         height: 80vh;
-        background-size: 12px 12px;
-        background-position: 0 0, 0 6px, 6px -6px, -6px 0;
-        background-image: linear-gradient(45deg, #e0e0e0 25%, transparent 25%),
-          linear-gradient(-45deg, #e0e0e0 25%, transparent 25%),
-          linear-gradient(45deg, transparent 75%, #e0e0e0 75%),
-          linear-gradient(-45deg, transparent 75%, #e0e0e0 75%);
         border-radius: 8px;
         border: 1px solid var(--border);
         display: flex;
         align-items: center;
         justify-content: center;
-      }
-
-      [data-theme="dark"] .dim-overlay .dim-full-area {
-        background-image: linear-gradient(45deg, #30363d 25%, transparent 25%),
-          linear-gradient(-45deg, #30363d 25%, transparent 25%),
-          linear-gradient(45deg, transparent 75%, #30363d 75%),
-          linear-gradient(-45deg, transparent 75%, #30363d 75%);
       }
 
       /* Font Family */
@@ -888,6 +859,24 @@
     </div>
 
     <script>
+      // ─── Checker Grid WebComponent ─────────────────────────────────────────
+
+      class CheckerGrid extends HTMLElement {
+        connectedCallback() {
+          const size = parseInt(this.getAttribute('size'), 10) || 10
+          const half = size / 2
+          this.style.backgroundSize = `${size}px ${size}px`
+          this.style.backgroundPosition = `0 0, 0 ${half}px, ${half}px -${half}px, -${half}px 0`
+          this.style.backgroundImage = [
+            'linear-gradient(45deg, var(--checker-color) 25%, transparent 25%)',
+            'linear-gradient(-45deg, var(--checker-color) 25%, transparent 25%)',
+            'linear-gradient(45deg, transparent 75%, var(--checker-color) 75%)',
+            'linear-gradient(-45deg, transparent 75%, var(--checker-color) 75%)'
+          ].join(', ')
+        }
+      }
+      customElements.define('checker-grid', CheckerGrid)
+
       // ─── Copy Button WebComponent ──────────────────────────────────────────
 
       class CopyButton extends HTMLElement {
@@ -983,7 +972,7 @@
         }
 
         _setTheme(t) {
-          document.documentElement.setAttribute('data-theme', t)
+          document.documentElement.style.colorScheme = t
           localStorage.setItem('token-viewer-theme', t)
           this.textContent = t === 'dark' ? '\u263C' : '\u263E'
         }
@@ -1417,7 +1406,7 @@
       function renderColor(v) {
         if (typeof v === 'string') {
           const css = v.startsWith('#') || v.startsWith('rgb') || v.startsWith('hsl') ? v : '#' + v
-          return '<div class="render-color"><div class="swatch"><div class="swatch-inner" style="background:' + css + '"></div></div><div class="color-info"><div class="color-row"><span class="hex">' + v + '</span></div></div></div>'
+          return '<div class="render-color"><checker-grid class="swatch"><div class="swatch-inner" style="background:' + css + '"></div></checker-grid><div class="color-info"><div class="color-row"><span class="hex">' + v + '</span></div></div></div>'
         }
         if (typeof v !== 'object') return ''
         const css = colorToCSS(v)
@@ -1425,7 +1414,7 @@
         const alpha = v.alpha != null ? parseFloatSafe(v.alpha) : 1
         const cs = v.colorSpace || ''
         const alphaStr = alpha < 1 ? '<div style="font-size:10px;color:var(--text-dim)">alpha ' + alpha.toFixed(2) + '</div>' : ''
-        return '<div class="render-color"><div class="swatch"><div class="swatch-inner" style="background:' + css + '"></div></div><div class="color-info"><div class="color-row"><span class="hex">' + hex + '</span><copy-button class="card-btn" value="' + hex + '" title="Copy hex"></copy-button></div><div class="color-space">' + cs + '</div>' + alphaStr + '</div></div>'
+        return '<div class="render-color"><checker-grid class="swatch"><div class="swatch-inner" style="background:' + css + '"></div></checker-grid><div class="color-info"><div class="color-row"><span class="hex">' + hex + '</span><copy-button class="card-btn" value="' + hex + '" title="Copy hex"></copy-button></div><div class="color-space">' + cs + '</div>' + alphaStr + '</div></div>'
       }
 
       function renderDimension(v) {
@@ -1444,7 +1433,7 @@
         else if (unit !== 'px' && unit !== '') px = 0 // viewport units, %, etc.
         const canPreview = unit === '' || unit === 'px' || unit === 'rem' || unit === 'em' || unit === 'pt' || unit === 'cm' || unit === 'mm' || unit === 'in'
         const size = canPreview ? Math.max(4, Math.min(72, px)) : 0
-        const preview = canPreview ? `<div class="dim-preview" data-dim-px="${px}" onclick="showDimFull(this)"><div class="dim-box" style="width:${size}px;height:${size}px"></div></div>` : ''
+        const preview = canPreview ? `<checker-grid class="dim-preview" data-dim-px="${px}" onclick="showDimFull(this)"><div class="dim-box" style="width:${size}px;height:${size}px"></div></checker-grid>` : ''
         return `<div class="render-dimension">${preview}<div class="dim-info"><span class="val">${num}</span><span class="unit">${unit || 'px'}</span></div></div>`
       }
 
@@ -1458,7 +1447,7 @@
           dimOverlay.innerHTML = `
             <button class="dim-close" onclick="closeDimFull()">Close</button>
             <div class="dim-scale-info"></div>
-            <div class="dim-full-area"></div>
+            <checker-grid class="dim-full-area"></checker-grid>
           `
           dimOverlay.addEventListener('click', (e) => {
             if (e.target === dimOverlay) closeDimFull()
