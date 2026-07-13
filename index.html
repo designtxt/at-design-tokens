@@ -336,6 +336,11 @@
         font-size: 13px;
       }
 
+      .card-btn-edit {
+        text-decoration: none;
+        font-size: 15px;
+      }
+
       .token-raw {
         display: none;
         margin: 8px -14px -14px;
@@ -1729,6 +1734,7 @@
         html += '<copy-button class="card-btn" value="' + t.path + '" title="Copy token path"></copy-button>'
         html += '<button class="card-btn card-btn-advanced" title="Show computed values and CSS">CSS</button>'
         html += '<button class="card-btn card-btn-raw" title="Show raw definition">{}</button>'
+        html += '<a class="card-btn card-btn-edit" title="Edit in atproto.at" href="https://atproto.at/viewer?uri=' + encodeURIComponent(state.records[state.activeRecordIdx].uri) + '" target="_blank" rel="noopener">\u2197</a>'
         if (type) html += '<span class="token-type-badge">' + type + '</span>'
         html += '</div>'
         if (desc) html += '<div class="token-desc">' + escapeHtml(desc) + '</div>'
