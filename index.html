@@ -1514,7 +1514,7 @@
           return 'color'
         }
         if (type === 'dimension') {
-          if (/radius/.test(p)) return 'border-radius'
+          if (/radius|rounded[-_\s]?corner|corner/.test(p)) return 'border-radius'
           if (/spacing|space|gap|padding|margin/.test(p)) return 'padding'
           if (/font[-_\s]?size|type[-_\s]?size|text[-_\s]?size/.test(p)) return 'font-size'
           if (/letter[-_\s]?spacing/.test(p)) return 'letter-spacing'
@@ -1851,7 +1851,7 @@
         const num = m ? m[1] : s
         const unit = m ? m[2] : ''
         const n = parseFloatSafe(num)
-        const isRadius = path && /radius/i.test(path)
+        const isRadius = path && /radius|rounded[-_\s]?corner|corner/i.test(path)
         const isFontSize = path && /font[-_\s]?size|type[-_\s]?size|text[-_\s]?size/i.test(path)
         const isLetterSpacing = path && /letter[-_\s]?spacing/i.test(path)
         const isLineHeight = path && /line[-_\s]?height/i.test(path)
